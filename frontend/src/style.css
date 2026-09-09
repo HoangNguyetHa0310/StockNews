@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ==========================================================================
+     HỆ THỐNG CẤU HÌNH MÀU SẮC CHUẨN DÙNG CHUNG (CENTRAL COLOR DESIGN SYSTEM)
+     CHẾ ĐỘ SÁNG (LIGHT MODE) - TÔNG MÀU XÁM TRẮNG THANH LỊCH & HIỆN ĐẠI
+     ========================================================================== */
+  
+  /* 1. MÀU NỀN TỔNG THỂ (XÁM TRẮNG CHUẨN CAO CẤP) */
+  --color-bg-page: #eef2f6;          /* Nền xám trắng tinh tế, êm mắt, không chói */
+  --color-bg-card: #ffffff;          /* Thẻ card/bảng trắng tinh tương phản sạch sẽ */
+  --color-bg-card-hover: #f8fafc;    /* Hover thẻ card */
+  --color-bg-subtle: #f8fafc;        /* Nền phụ, ô input, header bảng */
+  --color-bg-subtle-2: #e2e8f0;      /* Thanh track progress, separator */
+
+  /* 2. MÀU ĐƯỜNG VIỀN BORDER */
+  --color-border: #e2e8f0;           /* Đường viền chuẩn sắc nét */
+  --color-border-subtle: #f1f5f9;    /* Đường viền mờ nhạt */
+
+  /* 3. MÀU CHỮ TYPOGRAPHY */
+  --color-text-main: #0f172a;        /* Chữ chính: Đen than sắc nét, dễ đọc */
+  --color-text-sub: #475569;         /* Chữ phụ, nhãn giải thích */
+  --color-text-muted: #94a3b8;       /* Chữ mờ, timestamp */
+
+  /* 4. LỚP PHỦ BACKDROP MODAL: XÁM MỜ KÍNH FROSTED GLASS (KHÔNG ĐEN XÌ) */
+  --color-backdrop: rgba(100, 116, 139, 0.4);
+
+  /* 5. MÀU TÍN HIỆU NGHIỆP VỤ (SEMANTIC COLORS) */
+  --color-primary: #06b6d4;
+  --color-primary-bg: rgba(6, 182, 212, 0.1);
+  --color-primary-border: rgba(6, 182, 212, 0.25);
+
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-success-border: rgba(16, 185, 129, 0.25);
+
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-border: rgba(245, 158, 11, 0.25);
+
+  --color-danger: #f43f5e;
+  --color-danger-bg: rgba(244, 63, 94, 0.1);
+  --color-danger-border: rgba(244, 63, 94, 0.25);
+}
+
+.dark {
+  /* ==========================================================================
+     CHẾ ĐỘ TỐI (DARK MODE) - TỐI ƯU TƯƠNG PHẢN ĐÊM
+     ========================================================================== */
+  --color-bg-page: #0b1120;
+  --color-bg-card: #0f172a;
+  --color-bg-card-hover: #1e293b;
+  --color-bg-subtle: #1e293b;
+  --color-bg-subtle-2: #334155;
+
+  --color-border: #1e293b;
+  --color-border-subtle: #334155;
+
+  --color-text-main: #f8fafc;
+  --color-text-sub: #94a3b8;
+  --color-text-muted: #64748b;
+
+  --color-backdrop: rgba(2, 6, 23, 0.75);
+
+  --color-primary: #22d3ee;
+  --color-primary-bg: rgba(34, 211, 238, 0.12);
+  --color-primary-border: rgba(34, 211, 238, 0.3);
+
+  --color-success: #34d399;
+  --color-success-bg: rgba(52, 211, 153, 0.12);
+  --color-success-border: rgba(52, 211, 153, 0.3);
+
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.12);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  --color-danger: #fb7185;
+  --color-danger-bg: rgba(251, 113, 133, 0.12);
+  --color-danger-border: rgba(251, 113, 133, 0.3);
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-main);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}

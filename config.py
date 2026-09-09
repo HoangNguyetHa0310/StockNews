@@ -1,0 +1,174 @@
+# -*- coding: utf-8 -*-
+"""
+Cấu hình hệ thống Phân tích Định lượng & Dự đoán Machine Learning VN30
+"""
+from pathlib import Path
+from datetime import datetime
+
+# ==================== ĐƯỜNG DẪN HỆ THỐNG ====================
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data_cache"
+REPORTS_DIR = BASE_DIR / "reports"
+MODELS_DIR = BASE_DIR / "saved_models"
+
+# Đảm bảo các thư mục luôn tồn tại
+for d in [DATA_DIR, REPORTS_DIR, MODELS_DIR]:
+    d.mkdir(parents=True, exist_ok=True)
+
+# ==================== DANH SÁCH MÃ CHỨNG KHOÁN ====================
+# Chỉ số thị trường chung
+MARKET_INDICES = ["VNINDEX", "VN30"]
+
+# 30 cổ phiếu rổ VN30 (có thể tùy chỉnh hoặc mở rộng thêm)
+VN30_TICKERS = [
+    "ACB", "BCM", "BID", "BVH", "CTG", "FPT", "GAS", "GVR", "HDB", "HPG",
+    "MBB", "MSN", "MWG", "PLX", "POW", "SAB", "SHB", "SSB", "SSI", "STB",
+    "TCB", "TPB", "VCB", "VHM", "VIB", "VIC", "VJC", "VNM", "VPB", "VRE"
+]
+
+# ==================== THỜI GIAN DỮ LIỆU ====================
+# Ngày bắt đầu lấy dữ liệu lịch sử (khuyến nghị >= 2-3 năm để mô hình học các chu kỳ)
+DEFAULT_START_DATE = "2021-01-01"
+TODAY_DATE = datetime.now().strftime("%Y-%m-%d")
+
+# ==================== THÔNG SỐ CHỈ BÁO KỸ THUẬT ====================
+INDICATOR_PARAMS = {
+    "sma_periods": [10, 20, 50, 200],
+    "ema_periods": [9, 21],
+    "rsi_period": 14,
+    "macd": {"fast": 12, "slow": 26, "signal": 9},
+    "bollinger": {"period": 20, "std_dev": 2.0},
+    "atr_period": 14,
+    "stochastic": {"k_period": 14, "d_period": 3},
+    "volume_sma": 20,
+    "mfi_period": 14,
+}
+
+# ==================== THAM SỐ MACHINE LEARNING ====================
+ML_CONFIG = {
+    # Số phiên dự phóng tương lai (T+3 phù hợp chu kỳ giao dịch T+2.5 tại VN)
+    "prediction_horizon": 3,
+    # Ngưỡng lợi nhuận tối thiểu để coi là TĂNG (ví dụ > 1.0% sau T+3)
+    "return_threshold": 0.010,
+    # Tỷ lệ dữ liệu test và số split cho TimeSeriesSplit
+    "cv_splits": 5,
+    # Thuật toán ưu tiên: 'lightgbm' hoặc 'random_forest'
+    "model_type": "lightgbm",
+    "random_state": 42
+}
+
+# ==================== TRỌNG SỐ BỘ CHẤM ĐIỂM QUANT (0 - 100) ====================
+QUANT_WEIGHTS = {
+    "trend": 0.30,       # Điểm xu hướng (MA, EMA, Supertrend)
+    "momentum": 0.25,    # Điểm động lượng (RSI, MACD, Stochastic)
+    "money_flow": 0.25,  # Điểm dòng tiền (Volume vs MA20, OBV, MFI)
+    "ml_prediction": 0.20 # Điểm xác suất tăng giá từ Machine Learning
+}
+
+# Ngưỡng phân loại khuyến nghị
+SIGNAL_THRESHOLDS = {
+    "STRONG_BUY": 75,   # Điểm >= 75: Mua mạnh
+    "BUY": 60,          # Điểm 60 - 74: Mua
+    "HOLD": 45,         # Điểm 45 - 59: Theo dõi / Nắm giữ
+    "SELL": 30,         # Điểm 30 - 44: Bán
+    "STRONG_SELL": 0    # Điểm < 30: Bán mạnh / Thoát vị thế
+}
+
+# ==================== CẤU HÌNH API & CACHE ====================
+API_CONFIG = {
+    "source": "VCI",
+    "sleep_between_calls": 3,   # Giây nghỉ giữa các request để tránh rate-limit
+    "max_retries": 5,
+    "retry_wait": 30
+}
+
+# ==================== CẤU HÌNH FASTAPI SERVER ====================
+SERVER_CONFIG = {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "cors_origins": ["*"]       # Cho phép Vue 3 kết nối từ localhost hoặc IP mạng LAN
+}
+
+# ==================== CẤU HÌNH TỰ ĐỘNG CẬP NHẬT NGẦM (AUTO REFRESH) ====================
+AUTO_REFRESH_CONFIG = {
+    "enabled": True,             # Bật/tắt tự động làm mới ngầm
+    "interval_seconds": 60,      # Thời gian tự động làm mới (mặc định 60 giây = 1 phút)
+    "fetch_new_bars": True       # Tự động tải nến phiên mới nhất nếu thị trường đang mở cửa
+}
+
+# ==================== CẤU HÌNH KHUNG GIỜ GIAO DỊCH CHỨNG KHOÁN (MARKET SCHEDULE) ====================
+# Giảm tải hệ thống: Chỉ quét nến cổ phiếu trong giờ giao dịch (09:00 - 15:00, Thứ 2 - Thứ 6)
+# Tin tức & Đánh giá rủi ro luôn cập nhật 24/7 thời gian thực
+MARKET_SCHEDULE_CONFIG = {
+    "trading_start_time": "09:00",   # Bắt đầu phiên sáng (ATO)
+    "lunch_start_time": "11:30",     # Bắt đầu nghỉ trưa
+    "lunch_end_time": "13:00",       # Bắt đầu phiên chiều
+    "trading_end_time": "15:00",     # Đóng phiên chiều (ATC / Kết thúc giao dịch)
+    "enable_time_filter": True,      # Bật cơ chế lọc theo giờ (True: chỉ lấy giá cổ phiếu 9h-15h)
+    "news_always_realtime": True     # Tin tức & Rủi ro luôn cập nhật 24/7
+}
+
+
+def get_market_trading_status(now: datetime = None) -> dict:
+    """
+    Kiểm tra trạng thái thị trường chứng khoán Việt Nam (HOSE/VN30).
+    Trả về: { is_trading: bool, session_name: str, can_fetch_stocks: bool, detail: str }
+    """
+    if now is None:
+        now = datetime.now()
+
+    if not MARKET_SCHEDULE_CONFIG.get("enable_time_filter", True):
+        return {
+            "is_trading": True,
+            "session_name": "Chế độ mô phỏng liên tục",
+            "can_fetch_stocks": True,
+            "detail": "Bỏ qua bộ lọc giờ (Chạy 24/7)"
+        }
+
+    # Thứ 2 = 0, Chủ Nhật = 6
+    weekday = now.weekday()
+    if weekday in [5, 6]:
+        return {
+            "is_trading": False,
+            "session_name": "Đóng cửa (Cuối tuần)",
+            "can_fetch_stocks": False,
+            "detail": "Thị trường đóng cửa thứ Bảy & Chủ Nhật. Sử dụng dữ liệu chốt phiên gần nhất."
+        }
+
+    current_time_str = now.strftime("%H:%M")
+    start_t = MARKET_SCHEDULE_CONFIG.get("trading_start_time", "09:00")
+    lunch_start_t = MARKET_SCHEDULE_CONFIG.get("lunch_start_time", "11:30")
+    lunch_end_t = MARKET_SCHEDULE_CONFIG.get("lunch_end_time", "13:00")
+    end_t = MARKET_SCHEDULE_CONFIG.get("trading_end_time", "15:00")
+
+    if start_t <= current_time_str < lunch_start_t:
+        return {
+            "is_trading": True,
+            "session_name": "Phiên Sáng (Đang giao dịch)",
+            "can_fetch_stocks": True,
+            "detail": f"Khớp lệnh liên tục ({start_t} - {lunch_start_t})"
+        }
+    elif lunch_start_t <= current_time_str < lunch_end_t:
+        return {
+            "is_trading": False,
+            "session_name": "Tạm nghỉ trưa",
+            "can_fetch_stocks": False,
+            "detail": f"Thị trường nghỉ trưa ({lunch_start_t} - {lunch_end_t}). Bảo lưu giá phiên sáng."
+        }
+    elif lunch_end_t <= current_time_str <= end_t:
+        return {
+            "is_trading": True,
+            "session_name": "Phiên Chiều (Đang giao dịch)",
+            "can_fetch_stocks": True,
+            "detail": f"Khớp lệnh liên tục & ATC ({lunch_end_t} - {end_t})"
+        }
+    else:
+        return {
+            "is_trading": False,
+            "session_name": "Đã đóng phiên",
+            "can_fetch_stocks": False,
+            "detail": f"Ngoài giờ giao dịch ({end_t} - {start_t} hôm sau). Sử dụng dữ liệu chốt phiên."
+        }
+
+
+

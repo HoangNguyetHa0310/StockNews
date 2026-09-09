@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VN30 Quant & AI Intelligence Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            950: '#0b1120',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <nav class="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <i data-lucide="trending-up" class="w-6 h-6 text-slate-950 stroke-[2.5]"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        VN30 QUANT & AI PREDICTOR
+                        <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">PRO V2.5</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Hệ thống Phân tích Định lượng & Học máy Dự báo Xu hướng T+3</p>
+                </div>
+            </div>
+
+            <!-- Market Pill -->
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs">
+                    <span class="text-slate-400">VN-INDEX:</span>
+                    <span class="font-mono font-bold text-white" id="nav-vn-close">--</span>
+                    <span class="font-mono font-bold" id="nav-vn-change">--</span>
+                </div>
+                <div class="text-xs text-slate-400 font-mono hidden md:block">
+                    Cập nhật: <span class="text-slate-200">09/09/2026 14:30</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Market Overview Section -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: VN-INDEX -->
+            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Chỉ Số VN-INDEX</p>
+                        <h3 class="text-2xl font-bold font-mono text-white mt-1" id="m-close">--</h3>
+                        <p class="text-xs font-mono font-semibold mt-1" id="m-change">--</p>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+                    <span>Thanh khoản phiên:</span>
+                    <span class="font-mono text-slate-200" id="m-vol">--</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Market Sentiment -->
+            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Trạng Thái Thị Trường</p>
+                        <h3 class="text-base font-bold text-white mt-1.5" id="m-sentiment">--</h3>
+                        <p class="text-xs text-slate-400 mt-1">Dựa trên phân tích xu hướng</p>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <i data-lucide="compass" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+                    <span>Độ rộng rổ VN30:</span>
+                    <span class="font-mono font-bold text-emerald-400" id="m-pct-buy">--% Mua</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Tín hiệu Mua / Bán -->
+            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Phân Bổ Khuyến Nghị</p>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="text-emerald-400 font-bold font-mono text-xl" id="m-buy-count">0 Mua</span>
+                            <span class="text-slate-600">|</span>
+                            <span class="text-amber-400 font-bold font-mono text-xl" id="m-hold-count">0 Chờ</span>
+                            <span class="text-slate-600">|</span>
+                            <span class="text-rose-400 font-bold font-mono text-xl" id="m-sell-count">0 Bán</span>
+                        </div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-800/60">
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex" id="breadth-bar">
+                        <div class="bg-emerald-500 h-full" style="width: 50%"></div>
+                        <div class="bg-amber-500 h-full" style="width: 30%"></div>
+                        <div class="bg-rose-500 h-full" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Top Pick AI -->
+            <div class="p-5 rounded-2xl bg-gradient-to-br from-cyan-950/40 to-slate-900/80 border border-cyan-500/30 shadow-xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1">
+                            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Cổ Phiếu Dẫn Đầu AI
+                        </p>
+                        <h3 class="text-2xl font-bold font-mono text-white mt-1" id="top-ticker">--</h3>
+                        <p class="text-xs text-slate-300 font-mono mt-0.5" id="top-detail">--</p>
+                    </div>
+                    <div class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs border border-emerald-500/40" id="top-score">
+                        -- ĐIỂM
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-cyan-500/20 flex items-center justify-between text-xs text-slate-400">
+                    <span>Xác suất tăng T+3:</span>
+                    <span class="font-mono font-bold text-cyan-300" id="top-prob">--%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter & Search Toolbar -->
+        <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80">
+            <!-- Signal Filter Tabs -->
+            <div class="flex flex-wrap gap-2" id="filter-tabs">
+                <button onclick="setFilter('ALL')" class="filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950" data-filter="ALL">
+                    Tất cả (30)
+                </button>
+                <button onclick="setFilter('BUY')" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="BUY">
+                    Tín hiệu MUA / MUA MẠNH
+                </button>
+                <button onclick="setFilter('HOLD')" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="HOLD">
+                    Nắm giữ / Theo dõi
+                </button>
+                <button onclick="setFilter('SELL')" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700" data-filter="SELL">
+                    Cảnh báo BÁN
+                </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="relative w-full md:w-72">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="search-input" onkeyup="filterStocks()" placeholder="Tìm theo mã (ví dụ: FPT, HPG)..." 
+                       class="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition font-mono">
+            </div>
+        </section>
+
+        <!-- Stock Leaderboard Table -->
+        <section class="bg-slate-900/80 rounded-2xl border border-slate-800/80 shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-slate-800/80 flex justify-between items-center">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        BẢNG XẾP HẠNG TÍN HIỆU 30 CỔ PHIẾU VN30
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Sắp xếp theo Điểm Định Lượng & Xác suất Tăng Machine Learning</p>
+                </div>
+                <div class="text-xs font-mono text-slate-400">
+                    Hiển thị: <span id="visible-count" class="text-white font-bold">30</span> mã
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800 text-[11px] uppercase tracking-wider">
+                        <tr>
+                            <th class="py-3.5 px-4 text-center">Hạng</th>
+                            <th class="py-3.5 px-4">Mã CK</th>
+                            <th class="py-3.5 px-4 text-right">Giá Đóng Cửa</th>
+                            <th class="py-3.5 px-4 text-right">Biến Động</th>
+                            <th class="py-3.5 px-4 text-center">RSI (14)</th>
+                            <th class="py-3.5 px-4 text-center">Vol/MA20</th>
+                            <th class="py-3.5 px-4 text-center">Xác Suất Tăng AI (T+3)</th>
+                            <th class="py-3.5 px-4 text-center">Điểm Quant (100)</th>
+                            <th class="py-3.5 px-4 text-center">Khuyến Nghị</th>
+                            <th class="py-3.5 px-4 text-center">Vùng Mua Gợi Ý</th>
+                            <th class="py-3.5 px-4 text-right">Dừng Lỗ</th>
+                            <th class="py-3.5 px-4 text-right">Mục Tiêu 1</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-tbody" class="divide-y divide-slate-800/60 font-mono">
+                        <!-- Render qua JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Methodological Explanation -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+            <div class="p-5 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-xs text-slate-400 space-y-2">
+                <div class="flex items-center gap-2 text-slate-200 font-semibold text-sm">
+                    <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i> Thuật Toán Machine Learning
+                </div>
+                <p>Mô hình LightGBM / GBDT phân loại chuỗi thời gian (TimeSeriesSplit) dự đoán xác suất giá cổ phiếu tăng trên 1.0% trong T+3 phiên, tận dụng mối tương quan phi tuyến của 25 chỉ báo kỹ thuật.</p>
+            </div>
+            <div class="p-5 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-xs text-slate-400 space-y-2">
+                <div class="flex items-center gap-2 text-slate-200 font-semibold text-sm">
+                    <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i> Hệ Thống Điểm Đa Nhân Tố
+                </div>
+                <p>Điểm Quant (0-100) tổng hợp 4 trụ cột: Xu hướng (30%), Động lượng RSI/MACD (25%), Dòng tiền OBV/MFI (25%) và Dự phóng AI (20%) giúp triệt tiêu tín hiệu giả.</p>
+            </div>
+            <div class="p-5 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-xs text-slate-400 space-y-2">
+                <div class="flex items-center gap-2 text-slate-200 font-semibold text-sm">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Quản Trị Rủi Ro Chặt Chẽ
+                </div>
+                <p>Mỗi mã đều được tự động tính toán mức Dừng lỗ (Stoploss) và Mục tiêu (Target) dựa trên độ biến động thực tế ATR, luôn đảm bảo tỷ lệ Risk/Reward tối thiểu 1:1.5.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 py-8 text-center text-xs text-slate-500 font-mono mt-12">
+        <p>Hệ thống hỗ trợ ra quyết định đầu tư định lượng VN30 &bull; Dữ liệu nguồn từ Vnstock API</p>
+        <p class="mt-1 text-[11px] text-slate-600">Lưu ý: Kết quả mang tính chất tham khảo phân tích kỹ thuật & toán học xác suất, không phải lời mời chào đầu tư ủy thác.</p>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        const STOCKS_DATA = [{"ticker": "FPT", "date": "2026-09-09", "close": 72.5, "change_pct": 0.42, "volume": 3368900, "vol_vs_ma20": 0.63, "rsi": 57.7, "macd_status": "Bullish", "trend_score": 80.0, "momentum_score": 80.0, "flow_score": 55.0, "ml_prob_up": 24.0, "ml_confidence": "Cao (Giảm mạnh)", "total_score": 62.5, "signal": "THEO DÕI (Chờ AI đồng thuận)", "entry_range": "71.05 - 72.86", "support_1": 70.7, "support_2": 68.0, "resistance_1": 74.22, "resistance_2": 77.58, "stoploss": 69.92, "target_1": 76.37, "target_2": 78.95, "risk_reward_ratio": 1.5}];
+        const MARKET_DATA = {"vnindex_close": 1823.73, "vnindex_change_pct": -0.37, "vnindex_volume": 508304198, "market_sentiment": "Thận Trọng / Tích Lũy Chờ Xu Hướng Mới", "total_stocks_analyzed": 1, "buy_count": 0, "hold_count": 1, "sell_count": 0, "pct_buy": 0.0};
+        let currentFilter = 'ALL';
+
+        function initDashboard() {
+            lucide.createIcons();
+
+            if (MARKET_DATA) {
+                const close = MARKET_DATA.vnindex_close ? MARKET_DATA.vnindex_close.toLocaleString('vi-VN', {minimumFractionDigits: 2}) : '--';
+                const chg = MARKET_DATA.vnindex_change_pct ? (MARKET_DATA.vnindex_change_pct > 0 ? '+' : '') + MARKET_DATA.vnindex_change_pct.toFixed(2) + '%' : '--';
+                const chgClass = (MARKET_DATA.vnindex_change_pct || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400';
+
+                document.getElementById('nav-vn-close').innerText = close;
+                document.getElementById('nav-vn-change').innerText = chg;
+                document.getElementById('nav-vn-change').className = 'font-mono font-bold ' + chgClass;
+
+                document.getElementById('m-close').innerText = close;
+                document.getElementById('m-change').innerText = chg;
+                document.getElementById('m-change').className = 'text-xs font-mono font-semibold mt-1 ' + chgClass;
+                
+                document.getElementById('m-vol').innerText = MARKET_DATA.vnindex_volume ? MARKET_DATA.vnindex_volume.toLocaleString('vi-VN') : '--';
+                document.getElementById('m-sentiment').innerText = MARKET_DATA.market_sentiment || '--';
+                document.getElementById('m-pct-buy').innerText = (MARKET_DATA.pct_buy || 0) + '% Mua';
+
+                document.getElementById('m-buy-count').innerText = (MARKET_DATA.buy_count || 0) + ' Mua';
+                document.getElementById('m-hold-count').innerText = (MARKET_DATA.hold_count || 0) + ' Chờ';
+                document.getElementById('m-sell-count').innerText = (MARKET_DATA.sell_count || 0) + ' Bán';
+
+                const total = MARKET_DATA.total_stocks_analyzed || 30;
+                const buyW = ((MARKET_DATA.buy_count || 0) / total * 100);
+                const holdW = ((MARKET_DATA.hold_count || 0) / total * 100);
+                const sellW = ((MARKET_DATA.sell_count || 0) / total * 100);
+                document.getElementById('breadth-bar').innerHTML = `
+                    <div class="bg-emerald-500 h-full" style="width: ${buyW}%"></div>
+                    <div class="bg-amber-500 h-full" style="width: ${holdW}%"></div>
+                    <div class="bg-rose-500 h-full" style="width: ${sellW}%"></div>
+                `;
+            }
+
+            if (STOCKS_DATA && STOCKS_DATA.length > 0) {
+                const top = STOCKS_DATA[0];
+                document.getElementById('top-ticker').innerText = top.ticker;
+                document.getElementById('top-detail').innerText = `Giá: ${top.close.toLocaleString('vi-VN')} (${top.change_pct > 0 ? '+' : ''}${top.change_pct}%)`;
+                document.getElementById('top-score').innerText = `${top.total_score} ĐIỂM`;
+                document.getElementById('top-prob').innerText = `${top.ml_prob_up}%`;
+            }
+
+            renderTable(STOCKS_DATA);
+        }
+
+        function getSignalBadge(signal) {
+            if (signal.includes('MUA MẠNH')) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">MUA MẠNH</span>`;
+            } else if (signal.includes('MUA')) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">MUA</span>`;
+            } else if (signal.includes('BÁN MẠNH')) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">BÁN MẠNH</span>`;
+            } else if (signal.includes('BÁN')) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-300 border border-rose-500/20">BÁN</span>`;
+            } else if (signal.includes('Chờ AI')) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">THEO DÕI (CHỜ AI)</span>`;
+            } else {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">QUAN SÁT</span>`;
+            }
+        }
+
+        function renderTable(stocks) {
+            const tbody = document.getElementById('stock-tbody');
+            tbody.innerHTML = '';
+            document.getElementById('visible-count').innerText = stocks.length;
+
+            stocks.forEach((s, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition duration-150";
+
+                const chgColor = s.change_pct > 0 ? 'text-emerald-400' : (s.change_pct < 0 ? 'text-rose-400' : 'text-slate-300');
+                const chgSign = s.change_pct > 0 ? '+' : '';
+
+                const probWidth = Math.min(Math.max(s.ml_prob_up, 10), 100);
+                const probColor = s.ml_prob_up >= 60 ? 'bg-emerald-500' : (s.ml_prob_up <= 40 ? 'bg-rose-500' : 'bg-cyan-500');
+
+                let scoreBadge = "bg-slate-800 text-slate-300";
+                if (s.total_score >= 75) scoreBadge = "bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/40";
+                else if (s.total_score >= 60) scoreBadge = "bg-emerald-500/10 text-emerald-300 font-bold";
+                else if (s.total_score <= 35) scoreBadge = "bg-rose-500/20 text-rose-400 font-bold border border-rose-500/40";
+                else if (s.total_score <= 45) scoreBadge = "bg-rose-500/10 text-rose-300 font-semibold";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center text-slate-500 text-[11px]">${idx + 1}</td>
+                    <td class="py-3 px-4 font-bold text-white hover:text-cyan-400 transition cursor-pointer">${s.ticker}</td>
+                    <td class="py-3 px-4 text-right font-semibold text-slate-200">${s.close.toLocaleString('vi-VN', {minimumFractionDigits: 2})}</td>
+                    <td class="py-3 px-4 text-right font-semibold ${chgColor}">${chgSign}${s.change_pct.toFixed(2)}%</td>
+                    <td class="py-3 px-4 text-center text-slate-300">${s.rsi ? s.rsi.toFixed(1) : '--'}</td>
+                    <td class="py-3 px-4 text-center ${s.vol_vs_ma20 >= 1.3 ? 'text-amber-400 font-bold' : 'text-slate-300'}">${s.vol_vs_ma20 ? s.vol_vs_ma20.toFixed(2) : '--'}x</td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="w-10 text-right font-semibold ${s.ml_prob_up >= 55 ? 'text-emerald-400' : 'text-slate-300'}">${s.ml_prob_up}%</span>
+                            <div class="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                <div class="${probColor} h-full" style="width: ${probWidth}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-2 py-0.5 rounded-lg text-xs ${scoreBadge}">${s.total_score}</span>
+                    </td>
+                    <td class="py-3 px-4 text-center">${getSignalBadge(s.signal)}</td>
+                    <td class="py-3 px-4 text-center text-slate-400 text-[11px]">${s.entry_range || '--'}</td>
+                    <td class="py-3 px-4 text-right text-rose-400 font-semibold">${s.stoploss ? s.stoploss.toLocaleString('vi-VN', {minimumFractionDigits: 2}) : '--'}</td>
+                    <td class="py-3 px-4 text-right text-emerald-400 font-semibold">${s.target_1 ? s.target_1.toLocaleString('vi-VN', {minimumFractionDigits: 2}) : '--'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = "filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950";
+                } else {
+                    btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700";
+                }
+            });
+            filterStocks();
+        }
+
+        function filterStocks() {
+            const searchVal = document.getElementById('search-input').value.trim().toUpperCase();
+            let filtered = STOCKS_DATA.filter(s => {
+                const matchesSearch = s.ticker.includes(searchVal);
+                if (!matchesSearch) return false;
+
+                if (currentFilter === 'BUY') {
+                    return s.signal.includes('MUA');
+                } else if (currentFilter === 'HOLD') {
+                    return s.signal.includes('QUAN SÁT') || s.signal.includes('NẮM GIỮ') || s.signal.includes('THEO DÕI');
+                } else if (currentFilter === 'SELL') {
+                    return s.signal.includes('BÁN');
+                }
+                return true;
+            });
+
+            renderTable(filtered);
+        }
+
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
