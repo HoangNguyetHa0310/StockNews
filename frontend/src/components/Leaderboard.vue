@@ -64,21 +64,27 @@
       </div>
 
       <!-- Mobile Scroll Hint -->
-      <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
-        <ArrowLeftRight class="w-3.5 h-3.5 shrink-0" />
-        <span>Vuốt ngang bảng để xem đầy đủ 13 cột chỉ số kỹ thuật & mở biểu đồ</span>
+      <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center justify-between gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
+        <div class="flex items-center gap-1.5">
+          <ArrowLeftRight class="w-3.5 h-3.5 shrink-0 animate-pulse" />
+          <span>Vuốt ngang để xem 11 chỉ số còn lại</span>
+        </div>
+        <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded font-mono font-bold border border-cyan-500/20 shrink-0">2 cột cố định</span>
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs min-w-[980px]">
-          <thead class="bg-theme-subtle/80 text-theme-sub font-semibold border-b border-theme-border text-[11px] uppercase tracking-wider select-none">
+        <table class="w-full text-left text-xs min-w-[980px] border-separate border-spacing-0">
+          <thead class="bg-theme-subtle text-theme-sub font-semibold text-[11px] uppercase tracking-wider select-none">
             <tr>
-              <th class="py-3.5 px-3 text-center w-12 text-theme-muted">Hạng</th>
+              <!-- Cột 1: Hạng (Cố định đứng yên / Sticky) -->
+              <th class="py-3.5 px-2 text-center w-12 min-w-[48px] max-w-[48px] text-theme-muted sticky left-0 z-30 bg-theme-subtle border-b border-theme-border">
+                Hạng
+              </th>
 
-              <!-- Cột Mã CK -->
+              <!-- Cột 2: Mã CK (Cố định đứng yên / Sticky) -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group"
-                :class="sortKey === 'ticker' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
+                class="py-3.5 px-3 cursor-pointer transition select-none group w-20 min-w-[76px] max-w-[80px] sticky left-12 z-30 bg-theme-subtle border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)]"
+                :class="sortKey === 'ticker' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('ticker')"
                 title="Bấm để sắp xếp theo Mã CK"
               >
@@ -92,7 +98,7 @@
 
               <!-- Cột Giá Đóng -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group"
+                class="py-3.5 px-3 cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'close' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('close')"
                 title="Bấm để sắp xếp theo Giá Đóng Cửa"
@@ -107,7 +113,7 @@
 
               <!-- Cột Biến Động -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group"
+                class="py-3.5 px-3 cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'change_pct' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('change_pct')"
                 title="Bấm để sắp xếp theo % Biến Động"
@@ -122,7 +128,7 @@
 
               <!-- Cột RSI (14) -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group"
+                class="py-3.5 px-3 cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'rsi' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('rsi')"
                 title="Bấm để sắp xếp theo RSI (14)"
@@ -137,7 +143,7 @@
 
               <!-- Cột Vol/MA20 -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group"
+                class="py-3.5 px-3 cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'vol_vs_ma20' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('vol_vs_ma20')"
                 title="Bấm để sắp xếp theo Tỷ Lệ Vol/MA20"
@@ -152,7 +158,7 @@
 
               <!-- Cột Xác Suất Tăng AI (T+3) -->
               <th 
-                class="py-3.5 px-4 cursor-pointer transition select-none group min-w-[180px]"
+                class="py-3.5 px-4 cursor-pointer transition select-none group min-w-[180px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'ml_prob_up' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('ml_prob_up')"
                 title="Bấm để sắp xếp theo Xác Suất Tăng AI (T+3)"
@@ -167,7 +173,7 @@
 
               <!-- Cột Điểm Quant (100) -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group min-w-[140px]"
+                class="py-3.5 px-3 cursor-pointer transition select-none group min-w-[140px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'total_score' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('total_score')"
                 title="Bấm để sắp xếp theo Điểm Quant (100)"
@@ -182,7 +188,7 @@
               
               <!-- Cột Khuyến Nghị -->
               <th 
-                class="py-3.5 px-4 cursor-pointer transition select-none group whitespace-nowrap min-w-[150px]"
+                class="py-3.5 px-4 cursor-pointer transition select-none group whitespace-nowrap min-w-[150px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'signal' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('signal')"
                 title="Bấm để sắp xếp theo Khuyến Nghị"
@@ -196,11 +202,11 @@
               </th>
               
               <!-- Cột Vùng Mua -->
-              <th class="py-3.5 px-3 text-center whitespace-nowrap min-w-[110px] text-theme-sub">Vùng Mua</th>
+              <th class="py-3.5 px-3 text-center whitespace-nowrap min-w-[110px] text-theme-sub border-b border-theme-border bg-theme-subtle">Vùng Mua</th>
 
               <!-- Cột Dừng Lỗ -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group whitespace-nowrap"
+                class="py-3.5 px-3 cursor-pointer transition select-none group whitespace-nowrap border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'stoploss' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('stoploss')"
                 title="Bấm để sắp xếp theo Mức Cắt Lỗ"
@@ -215,7 +221,7 @@
 
               <!-- Cột Mục Tiêu 1 -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group whitespace-nowrap"
+                class="py-3.5 px-3 cursor-pointer transition select-none group whitespace-nowrap border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'target_1' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('target_1')"
                 title="Bấm để sắp xếp theo Mức Giá Mục Tiêu 1"
@@ -228,34 +234,38 @@
                 </div>
               </th>
 
-              <th class="py-3.5 px-3 text-center w-14 text-theme-sub">Biểu Đồ</th>
+              <th class="py-3.5 px-3 text-center w-14 text-theme-sub border-b border-theme-border bg-theme-subtle">Biểu Đồ</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-theme-border font-mono">
+          <tbody class="font-mono">
             <tr 
               v-for="(s, idx) in filteredStocks" 
               :key="s.ticker"
               @click="$emit('select-stock', s)"
               class="hover:bg-theme-card-hover transition duration-150 cursor-pointer group"
             >
-              <td class="py-3.5 px-3 text-center text-theme-muted text-[11px] font-semibold">{{ idx + 1 }}</td>
+              <!-- Cột 1: Hạng (Cố định đứng yên / Sticky) -->
+              <td class="py-3.5 px-2 text-center text-theme-muted text-[11px] font-semibold sticky left-0 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-theme-border transition-colors w-12 min-w-[48px] max-w-[48px]">
+                {{ idx + 1 }}
+              </td>
               
+              <!-- Cột 2: Mã CK (Cố định đứng yên / Sticky) -->
               <td 
-                class="py-3.5 px-3 font-bold text-theme-text group-hover:text-cyan-500 transition text-sm"
-                :class="sortKey === 'ticker' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
+                class="py-3.5 px-3 font-bold text-theme-text group-hover:text-cyan-500 transition text-sm sticky left-12 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-20 min-w-[76px] max-w-[80px]"
+                :class="sortKey === 'ticker' ? 'text-cyan-500 font-extrabold' : ''"
               >
                 <span>{{ s.ticker }}</span>
               </td>
               
               <td 
-                class="py-3.5 px-3 text-right font-semibold text-theme-text"
+                class="py-3.5 px-3 text-right font-semibold text-theme-text border-b border-theme-border"
                 :class="sortKey === 'close' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 {{ formatPrice(s.close) }}
               </td>
               
               <td 
-                class="py-3.5 px-3 text-right font-semibold whitespace-nowrap"
+                class="py-3.5 px-3 text-right font-semibold whitespace-nowrap border-b border-theme-border"
                 :class="[
                   s.change_pct >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400',
                   sortKey === 'change_pct' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''
@@ -265,14 +275,14 @@
               </td>
               
               <td 
-                class="py-3.5 px-3 text-center text-theme-text"
+                class="py-3.5 px-3 text-center text-theme-text border-b border-theme-border"
                 :class="sortKey === 'rsi' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 {{ s.rsi?.toFixed(1) || '--' }}
               </td>
               
               <td 
-                class="py-3.5 px-3 text-center whitespace-nowrap"
+                class="py-3.5 px-3 text-center whitespace-nowrap border-b border-theme-border"
                 :class="[
                   s.vol_vs_ma20 >= 1.3 ? 'text-amber-500 dark:text-amber-400 font-bold' : 'text-theme-text',
                   sortKey === 'vol_vs_ma20' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''
@@ -282,7 +292,7 @@
               </td>
               
               <td 
-                class="py-3.5 px-4 whitespace-nowrap"
+                class="py-3.5 px-4 whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'ml_prob_up' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 <div class="flex items-center justify-center gap-2.5">
@@ -303,7 +313,7 @@
               </td>
               
               <td 
-                class="py-3.5 px-3 text-center whitespace-nowrap"
+                class="py-3.5 px-3 text-center whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'total_score' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 <span 
@@ -316,31 +326,31 @@
               
               <!-- Khuyến Nghị Cell: whitespace-nowrap để TUYỆT ĐỐI không bao giờ bị xuống dòng -->
               <td 
-                class="py-3.5 px-4 text-center whitespace-nowrap"
+                class="py-3.5 px-4 text-center whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'signal' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 <span v-html="getSignalBadge(s.signal)"></span>
               </td>
               
-              <td class="py-3.5 px-3 text-center text-theme-sub text-[11px] whitespace-nowrap">
+              <td class="py-3.5 px-3 text-center text-theme-sub text-[11px] whitespace-nowrap border-b border-theme-border">
                 {{ s.entry_range || '--' }}
               </td>
               
               <td 
-                class="py-3.5 px-3 text-right text-rose-500 dark:text-rose-400 font-semibold whitespace-nowrap"
+                class="py-3.5 px-3 text-right text-rose-500 dark:text-rose-400 font-semibold whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'stoploss' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 {{ formatPrice(s.stoploss) }}
               </td>
               
               <td 
-                class="py-3.5 px-3 text-right text-emerald-500 dark:text-emerald-400 font-semibold whitespace-nowrap"
+                class="py-3.5 px-3 text-right text-emerald-500 dark:text-emerald-400 font-semibold whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'target_1' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
               >
                 {{ formatPrice(s.target_1) }}
               </td>
               
-              <td class="py-3.5 px-3 text-center">
+              <td class="py-3.5 px-3 text-center border-b border-theme-border">
                 <button 
                   @click.stop="$emit('select-stock', s)"
                   class="p-1.5 rounded-lg bg-theme-subtle group-hover:bg-cyan-500 group-hover:text-slate-950 text-theme-muted transition shadow-sm"
