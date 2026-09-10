@@ -177,19 +177,33 @@ class QuantAnalyzer:
         prev_row = df.iloc[-2]
 
         # Điểm từng thành phần
+        # Điểm từng thành phần kỹ thuật trên biểu đồ
         trend_score = self.calculate_trend_score(last_row)
         momentum_score = self.calculate_momentum_score(last_row)
         flow_score = self.calculate_money_flow_score(last_row)
         
-        ml_prob_up = ml_result.get("prob_up", 0.5)
-        ml_score = ml_prob_up * 100.0
+        raw_ml_prob = ml_result.get("prob_up", 0.5)
 
-        # Tổng hợp điểm trọng số
+        # DỰ ĐOÁN KHẢ NĂNG TĂNG GIÁ (%) DỰA TRÊN THÔNG TIN & BIỂU ĐỒ KỸ THUẬT:
+        # - Vị thế xu hướng đường giá & MA trên biểu đồ: 40%
+        # - Động lượng gia tốc giá RSI & MACD Golden Cross: 30%
+        # - Dòng tiền thanh khoản Vol/MA20, MFI & OBV: 20%
+        # - Dự báo từ mô hình Machine Learning AI: 10%
+        predicted_up_pct = (
+            trend_score * 0.40 +
+            momentum_score * 0.30 +
+            flow_score * 0.20 +
+            (raw_ml_prob * 100.0) * 0.10
+        )
+        predicted_up_pct = round(min(max(predicted_up_pct, 5.0), 95.0), 1)
+        ml_prob_up = predicted_up_pct / 100.0
+
+        # Tổng hợp điểm trọng số Quant
         total_score = (
             trend_score * self.weights["trend"] +
             momentum_score * self.weights["momentum"] +
             flow_score * self.weights["money_flow"] +
-            ml_score * self.weights["ml_prediction"]
+            predicted_up_pct * self.weights["ml_prediction"]
         )
         total_score = round(total_score, 1)
 
@@ -197,6 +211,17 @@ class QuantAnalyzer:
         levels = self.calculate_price_levels(df)
 
         change_pct = ((last_row['close'] / prev_row['close']) - 1.0) * 100.0
+
+        if predicted_up_pct >= 70.0:
+            confidence = "Rất cao (Tăng mạnh)"
+        elif predicted_up_pct >= 55.0:
+            confidence = "Khả quan (Xu hướng Tăng)"
+        elif predicted_up_pct <= 35.0:
+            confidence = "Yếu (Cảnh báo Giảm)"
+        elif predicted_up_pct <= 45.0:
+            confidence = "Thấp (Nghiêng về Giảm)"
+        else:
+            confidence = "Trung tính / Giằng co"
 
         base_res = {
             "ticker": ticker.upper(),
@@ -210,8 +235,9 @@ class QuantAnalyzer:
             "trend_score": round(trend_score, 1),
             "momentum_score": round(momentum_score, 1),
             "flow_score": round(flow_score, 1),
-            "ml_prob_up": round(ml_prob_up * 100.0, 1),
-            "ml_confidence": ml_result.get("confidence", "Trung tính"),
+            "predicted_up_pct": predicted_up_pct,
+            "ml_prob_up": predicted_up_pct,
+            "ml_confidence": confidence,
             "total_score": total_score,
             "signal": signal,
             **levels

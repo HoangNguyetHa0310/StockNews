@@ -69,7 +69,10 @@ def initialize_engine():
 def _refresh_calculations(force_update_api: bool = False):
     """Tính toán lại các chỉ số và dự đoán cho các mã đã nạp."""
     loader = STATE["data_loader"]
-    predictor = STATE["predictor"]
+    import importlib
+    import quant_analyzer
+    importlib.reload(quant_analyzer)
+    STATE["analyzer"] = quant_analyzer.QuantAnalyzer()
     analyzer = STATE["analyzer"]
 
     # 1. Nạp VN-INDEX
