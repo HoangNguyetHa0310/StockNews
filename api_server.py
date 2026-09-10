@@ -165,7 +165,7 @@ FRONTEND_DIST = Path(__file__).resolve().parent / "frontend" / "dist"
 if FRONTEND_DIST.exists() and (FRONTEND_DIST / "assets").exists():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
-@app.get("/", tags=["Giao diện & Thông tin"])
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Giao diện & Thông tin"])
 def get_root():
     """Truy cập giao diện Web Vue 3 (nếu đã build) hoặc thông tin hệ thống."""
     index_file = FRONTEND_DIST / "index.html"
@@ -179,6 +179,12 @@ def get_root():
         "last_updated": STATE["last_updated"],
         "docs_url": "/docs"
     }
+
+
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["Hệ thống"])
+def health_check():
+    """Endpoint kiểm tra sức khỏe hệ thống (Health Check) hỗ trợ cả GET và HEAD cho UptimeRobot."""
+    return {"status": "ok", "message": "Server is healthy and running"}
 
 
 @app.get("/api/market/overview", tags=["Thị trường"])
@@ -450,7 +456,7 @@ if FRONTEND_DIST.exists():
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
-    @app.get("/{full_path:path}", include_in_schema=False)
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"], include_in_schema=False)
     async def serve_spa(full_path: str):
         # Tránh can thiệp các API endpoint nếu bị gọi sai path
         if full_path.startswith("api/"):
