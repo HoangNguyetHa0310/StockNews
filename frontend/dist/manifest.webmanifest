@@ -4,8 +4,8 @@
   "description": "Hệ thống Phân tích Định lượng & AI Dự đoán Cổ phiếu VN30",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#020617",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "orientation": "portrait",
   "icons": [
     {

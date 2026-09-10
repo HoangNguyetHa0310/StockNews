@@ -111,9 +111,23 @@
   background: #334155;
 }
 
-/* Mobile Touch & Safe Area */
+/* Mobile Touch & Safe Area Insets (Tai thỏ / Dynamic Island & Home indicator) */
 .overflow-x-auto, .overflow-y-auto {
   -webkit-overflow-scrolling: touch;
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  nav.sticky.top-0 {
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
@@ -121,3 +135,4 @@
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
   }
 }
+

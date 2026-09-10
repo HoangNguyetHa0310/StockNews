@@ -18,7 +18,7 @@
       />
 
       <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->
-      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-24 md:pb-8 space-y-4 sm:space-y-8">
+      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-32 md:pb-8 space-y-4 sm:space-y-8">
         
         <!-- API Offline Warning Alert (If Backend Not Running) -->
         <div 
@@ -106,7 +106,10 @@
       </footer>
 
       <!-- Mobile Bottom Navigation Bar (Thanh điều hướng cố định dưới đáy màn hình điện thoại) -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-theme-card/95 backdrop-blur-lg border-t border-theme-border flex items-center justify-around py-2 px-3 shadow-lg select-none">
+      <nav 
+        class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-theme-card/95 backdrop-blur-lg border-t border-theme-border flex items-center justify-around px-3 pt-2 pb-safe shadow-lg select-none"
+        style="padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));"
+      >
         <!-- Tab 1: Thị Trường VN30 -->
         <button 
           @click="handleSelectTab('dashboard')"

@@ -1,5 +1,8 @@
 <template>
-  <nav class="border-b border-theme-border bg-theme-card/90 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200">
+  <nav 
+    class="border-b border-theme-border bg-theme-card/90 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200 pt-safe"
+    style="padding-top: env(safe-area-inset-top, 0px);"
+  >
     <!-- Widescreen Container: Tối ưu co giãn trên điện thoại và màn hình rộng -->
     <div class="w-full max-w-[95%] xl:max-w-[88%] 2xl:max-w-[82%] mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
       
@@ -102,32 +105,37 @@ defineProps({
   }
 })
 
-const isDark = ref(true)
+// Mặc định chế độ Sáng (Light Mode)
+const isDark = ref(false)
 
-onMounted(() => {
-  const savedTheme = localStorage.getItem('theme')
-  if (savedTheme === 'light') {
-    isDark.value = false
-    document.documentElement.classList.remove('dark')
-    document.documentElement.classList.add('light')
-  } else {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-    document.documentElement.classList.remove('light')
-  }
-})
-
-function toggleTheme() {
-  isDark.value = !isDark.value
-  if (isDark.value) {
+function applyTheme(dark) {
+  isDark.value = dark
+  const metaTheme = document.querySelector('meta[name="theme-color"]')
+  if (dark) {
     document.documentElement.classList.add('dark')
     document.documentElement.classList.remove('light')
     localStorage.setItem('theme', 'dark')
+    if (metaTheme) metaTheme.setAttribute('content', '#0b1120')
   } else {
     document.documentElement.classList.remove('dark')
     document.documentElement.classList.add('light')
     localStorage.setItem('theme', 'light')
+    if (metaTheme) metaTheme.setAttribute('content', '#ffffff')
   }
+}
+
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme')
+  // Mặc định là chế độ Sáng (Light Mode) trừ khi người dùng đã chủ động chọn 'dark'
+  if (savedTheme === 'dark') {
+    applyTheme(true)
+  } else {
+    applyTheme(false)
+  }
+})
+
+function toggleTheme() {
+  applyTheme(!isDark.value)
 }
 
 function formatNumber(val) {
