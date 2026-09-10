@@ -15,6 +15,8 @@
         :market-data="marketData" 
         :countdown="countdown"
         :refresh-interval="refreshInterval"
+        :is-refreshing="isRefreshingManual"
+        @refresh="handleManualRefresh"
       />
 
       <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->
@@ -67,12 +69,12 @@
 
         <!-- ==================== TAB 2: TIN TỨC THỊ TRƯỜNG ==================== -->
         <template v-else-if="currentTab === 'news'">
-          <NewsFeed />
+          <NewsFeed :key="newsRefreshKey" />
         </template>
 
         <!-- ==================== TAB 3: BÁO CÁO ĐÁNH GIÁ RỦI RO ==================== -->
         <template v-else-if="currentTab === 'risk'">
-          <NewsRiskReport />
+          <NewsRiskReport :key="riskRefreshKey" />
         </template>
 
       </main>
@@ -153,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { AlertCircle, ShieldAlert, LayoutDashboard, Newspaper } from 'lucide-vue-next'
 import Sidebar from './components/Sidebar.vue'
 import Navbar from './components/Navbar.vue'
@@ -168,7 +170,8 @@ import {
   fetchMarketOverview, 
   fetchVN30Leaderboard, 
   fetchMarketRecommendationReport, 
-  fetchMarketTradingFlow 
+  fetchMarketTradingFlow,
+  triggerMarketRefresh
 } from './api'
 
 // Quản lý Tab hiển thị: 'dashboard' | 'news' | 'risk'
@@ -182,6 +185,11 @@ const isApiOffline = ref(false)
 const refreshInterval = ref(60)
 const countdown = ref(60)
 let timer = null
+
+// Keys để ép buộc nạp mới các component Tab con khi làm mới (như Ctrl + Shift + R)
+const newsRefreshKey = ref(0)
+const riskRefreshKey = ref(0)
+const isRefreshingManual = ref(false)
 
 const isModalOpen = ref(false)
 const selectedStock = ref(null)
@@ -202,10 +210,25 @@ const topStock = computed(() => {
   return null
 })
 
+// Đóng toàn bộ các modal đang hiển thị nổi trên màn hình
+function closeAllModals() {
+  isModalOpen.value = false
+  selectedStock.value = null
+  isReportModalOpen.value = false
+  isFlowModalOpen.value = false
+}
+
+// Khi người dùng bấm chọn tab (Thị trường, Tin tức, Rủi ro AI)
 function handleSelectTab(tab) {
+  closeAllModals()
   currentTab.value = tab
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+// Bất cứ khi nào currentTab thay đổi, đảm bảo đóng sạch các modal
+watch(currentTab, () => {
+  closeAllModals()
+})
 
 async function loadData(isSilent = false) {
   if (!isSilent) {
@@ -239,6 +262,51 @@ async function loadData(isSilent = false) {
     if (!isSilent) {
       isLoading.value = false
     }
+  }
+}
+
+// Hàm xử lý nút bấm "Làm Mới Toàn Trang" (Tương đương phím tắt Ctrl + Shift + R)
+async function handleManualRefresh() {
+  if (isRefreshingManual.value) return
+  isRefreshingManual.value = true
+  try {
+    // 1. Gửi lệnh kích hoạt server tính toán lại dữ liệu mới nhất
+    await triggerMarketRefresh().catch(() => {})
+  } catch (e) {}
+
+  // 2. Nạp lại dữ liệu thị trường và kích hoạt nạp lại Tab Tin Tức / Rủi Ro AI
+  await loadData(false)
+  newsRefreshKey.value++
+  riskRefreshKey.value++
+  countdown.value = refreshInterval.value
+
+  setTimeout(() => {
+    isRefreshingManual.value = false
+  }, 600)
+}
+
+// ==================== CƠ CHẾ TỰ ĐỘNG LÀM MỚI KHI MỞ LẠI MÀN HÌNH / QUAY LẠI CHROME ====================
+let lastActiveTimestamp = Date.now()
+
+async function handleVisibilityOrFocus() {
+  // Khi người dùng bật sáng màn hình, mở khóa điện thoại, hoặc quay lại tab Chrome từ ứng dụng khác
+  if (document.visibilityState === 'visible') {
+    const now = Date.now()
+    const elapsedSeconds = Math.round((now - lastActiveTimestamp) / 1000)
+
+    // Nếu người dùng đã rời màn hình > 2 giây: lập tức làm mới toàn bộ dữ liệu (như Ctrl + Shift + R)
+    if (elapsedSeconds >= 2) {
+      console.log(`[Lifecycle] Mở lại web sau ${elapsedSeconds}s -> Tự động nạp mới toàn bộ dữ liệu...`)
+      countdown.value = refreshInterval.value
+      // Nạp ngầm dữ liệu mới nhất mà không giật màn hình
+      await loadData(true)
+      newsRefreshKey.value++
+      riskRefreshKey.value++
+    }
+    lastActiveTimestamp = now
+  } else {
+    // Lưu lại mốc thời gian lúc người dùng tắt màn hình hoặc chuyển sang ứng dụng khác
+    lastActiveTimestamp = Date.now()
   }
 }
 
@@ -294,9 +362,20 @@ function openFlowReport() {
 onMounted(async () => {
   await loadData(false)
   startAutoRefreshTimer()
+
+  // Đăng ký các sự kiện theo dõi vòng đời trang web trên điện thoại & máy tính:
+  // - visibilitychange: Tắt/bật màn hình điện thoại hoặc ẩn/hiện tab
+  // - focus: Người dùng click chuột lại vào cửa sổ web
+  // - pageshow: Trình duyệt mở lại trang từ bộ nhớ cache của hệ điều hành
+  document.addEventListener('visibilitychange', handleVisibilityOrFocus)
+  window.addEventListener('focus', handleVisibilityOrFocus)
+  window.addEventListener('pageshow', handleVisibilityOrFocus)
 })
 
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
+  document.removeEventListener('visibilitychange', handleVisibilityOrFocus)
+  window.removeEventListener('focus', handleVisibilityOrFocus)
+  window.removeEventListener('pageshow', handleVisibilityOrFocus)
 })
 </script>

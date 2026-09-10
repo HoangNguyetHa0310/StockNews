@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, List
 import pandas as pd
-from fastapi import FastAPI, Query, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Query, HTTPException, BackgroundTasks, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +39,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_no_cache_headers(request: Request, call_next):
+    """
+    Middleware chống cache cho toàn bộ endpoint API:
+    Đảm bảo khi người dùng quay lại web hoặc mở lại điện thoại,
+    dữ liệu luôn là bản mới nhất 100% từ server (giống như vừa bấm Ctrl + Shift + R).
+    """
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 # Quản lý bộ nhớ đệm State trong RAM để API phản hồi tức thì dưới 10ms
 STATE = {
