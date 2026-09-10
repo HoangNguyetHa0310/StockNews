@@ -445,7 +445,7 @@ def get_news_feed(
 @app.get("/api/news/risk-assessment", tags=["Đánh Giá Rủi Ro"])
 def get_news_risk_assessment():
     """Lấy báo cáo phân tích và đánh giá rủi ro thị trường từ các biến số tin tức vĩ mô/địa chính trị."""
-    report = NEWS_SERVICE.get_risk_assessment_report()
+    report = NEWS_SERVICE.get_risk_assessment_report(state=STATE, flow_service=MARKET_FLOW_SERVICE)
     return {
         "status": "success",
         "data": report

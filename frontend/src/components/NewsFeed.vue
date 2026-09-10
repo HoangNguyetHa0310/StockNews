@@ -208,7 +208,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Clock, Search, ExternalLink } from 'lucide-vue-next'
 import { fetchNewsFeed } from '../api'
 
@@ -218,12 +218,15 @@ const selectedRegion = ref(null)
 const selectedAsset = ref(null)
 const searchKeyword = ref('')
 const currentTime = ref('')
+let newsTimer = null
 
-async function loadNews() {
-  isLoading.value = true
+async function loadNews(isInitial = false) {
+  if (isInitial) isLoading.value = true
   const data = await fetchNewsFeed()
-  newsList.value = data
-  isLoading.value = false
+  if (data && data.length > 0) {
+    newsList.value = data
+  }
+  if (isInitial) isLoading.value = false
   currentTime.value = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 }
 
@@ -265,7 +268,14 @@ function getSentimentClass(sentiment) {
 }
 
 onMounted(() => {
-  loadNews()
+  loadNews(true)
+  newsTimer = setInterval(() => {
+    loadNews(false)
+  }, 30000)
+})
+
+onBeforeUnmount(() => {
+  if (newsTimer) clearInterval(newsTimer)
 })
 </script>
 
