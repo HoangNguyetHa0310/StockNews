@@ -86,7 +86,7 @@ SIGNAL_THRESHOLDS = {
 # ==================== CẤU HÌNH API & CACHE ====================
 API_CONFIG = {
     "source": "VCI",
-    "sleep_between_calls": 3,   # Giây nghỉ giữa các request để tránh rate-limit
+    "sleep_between_calls": 0.3,   # Giây nghỉ giữa các request để quét nhanh 30 mã mà không chạm rate-limit
     "max_retries": 5,
     "retry_wait": 30
 }

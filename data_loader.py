@@ -93,9 +93,21 @@ class DataLoader:
                     last_dt = datetime.strptime(last_cached_date, "%Y-%m-%d")
                     today_dt = datetime.strptime(end_date, "%Y-%m-%d")
                     
-                    if (today_dt - last_dt).days <= 0:
+                    if (today_dt - last_dt).days < 0:
                         return cached_df
                     
+                    if (today_dt - last_dt).days == 0:
+                        # Nến cuối trong cache là ngày hôm nay: Gọi API lấy nến realtime mới nhất trong phiên
+                        fetch_start = (today_dt - timedelta(days=2)).strftime("%Y-%m-%d")
+                        new_df = self.fetch_from_api(ticker, start_date=fetch_start, end_date=end_date)
+                        if new_df is not None and not new_df.empty:
+                            combined = pd.concat([cached_df, new_df]).drop_duplicates(subset=['time'], keep='last').sort_values('time').reset_index(drop=True)
+                            combined.to_csv(cache_file, index=False)
+                            if self.sleep_seconds > 0:
+                                time.sleep(self.sleep_seconds)
+                            return combined
+                        return cached_df
+
                     next_day = (last_dt + timedelta(days=1)).strftime("%Y-%m-%d")
                     if next_day <= end_date:
                         print(f"[{ticker}] Cập nhật bổ sung nến mới từ {next_day} đến {end_date}...")
@@ -108,9 +120,10 @@ class DataLoader:
                                 print(f"  [Cảnh báo an toàn] {ticker}: Nến mới ({new_price}) lệch > 35% so với giá nến cũ ({last_price}). Giữ nguyên cache an toàn.")
                                 return cached_df
 
-                            combined = pd.concat([cached_df, new_df]).drop_duplicates(subset=['time']).sort_values('time').reset_index(drop=True)
+                            combined = pd.concat([cached_df, new_df]).drop_duplicates(subset=['time'], keep='last').sort_values('time').reset_index(drop=True)
                             combined.to_csv(cache_file, index=False)
-                            time.sleep(self.sleep_seconds)
+                            if self.sleep_seconds > 0:
+                                time.sleep(self.sleep_seconds)
                             return combined
                     return cached_df
             except Exception as e:

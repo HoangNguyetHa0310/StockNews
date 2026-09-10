@@ -43,15 +43,6 @@
           <span class="md:hidden">{{ marketData.market_schedule.is_trading ? 'Mở' : 'Đóng' }}</span>
         </div>
 
-        <!-- Live Auto-Refresh Status Pill -->
-        <div 
-          class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 text-[11px] sm:text-xs font-mono font-medium shadow-sm"
-          :title="`Tự động làm mới dữ liệu mỗi ${refreshInterval}s (Cổ phiếu 9h-15h | Tin tức 24/7)`"
-        >
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-          <span class="hidden sm:inline">Làm mới:</span>
-          <span class="font-bold">{{ countdown }}s</span>
-        </div>
 
         <!-- Dark / Light Theme Toggle Button -->
         <button 

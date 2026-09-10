@@ -74,6 +74,7 @@ def _refresh_calculations(force_update_api: bool = False):
     importlib.reload(quant_analyzer)
     STATE["analyzer"] = quant_analyzer.QuantAnalyzer()
     analyzer = STATE["analyzer"]
+    predictor = STATE["predictor"]
 
     # 1. Nạp VN-INDEX
     vn_raw = loader.get_market_data("VNINDEX", force_update=force_update_api)
@@ -264,9 +265,9 @@ def get_market_recommendation_report():
 
 
 @app.post("/api/market/refresh", tags=["Thị trường"])
-def post_refresh_market():
-    """Kích hoạt làm mới và tính toán lại dữ liệu từ cache."""
-    _refresh_calculations(force_update_api=False)
+def post_refresh_market(force_api: bool = Query(True, description="Lấy nến Realtime mới nhất từ API")):
+    """Kích hoạt làm mới và tính toán lại dữ liệu từ cache hoặc API."""
+    _refresh_calculations(force_update_api=force_api)
     return {
         "status": "success",
         "message": "Đã làm mới và tính toán lại dữ liệu thành công",
