@@ -6,13 +6,13 @@ Tự động lưu trữ cục bộ, cập nhật dữ liệu mới (incremental)
 import time
 import os
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from vnstock.api.quote import Quote
 from config import (
     DATA_DIR, VN30_TICKERS, MARKET_INDICES,
     DEFAULT_START_DATE, TODAY_DATE, API_CONFIG,
-    get_vietnam_now
+    VIETNAM_TZ, get_vietnam_now
 )
 
 
@@ -64,6 +64,52 @@ class DataLoader:
                         return pd.DataFrame()
         return pd.DataFrame()
 
+    def is_cache_stale(self, cache_file: Path) -> bool:
+        """
+        Kiểm tra xem dữ liệu trong cache có bị cũ hay chưa cập nhật giá chốt phiên ATC không.
+        - Trả về True nếu:
+          + Chưa có file cache hoặc file trống.
+          + Sau 14:45 các ngày trong tuần (Thứ 2 - Thứ 6) mà nến cuối chưa phải hôm nay, hoặc file được ghi trước 14:45.
+          + Cuối tuần (Thứ 7, CN) mà nến cuối chưa có phiên Thứ 6 gần nhất.
+        """
+        if not cache_file.exists():
+            return True
+        try:
+            cached_df = pd.read_csv(cache_file, parse_dates=['time'])
+            if cached_df.empty:
+                return True
+
+            now = get_vietnam_now()
+            today_str = now.strftime("%Y-%m-%d")
+            weekday = now.weekday()
+
+            last_cached_dt = cached_df['time'].max()
+            last_cached_str = last_cached_dt.strftime("%Y-%m-%d")
+
+            # Lấy thời điểm chỉnh sửa file gần nhất theo giờ Việt Nam
+            mtime = datetime.fromtimestamp(cache_file.stat().st_mtime, tz=timezone.utc).astimezone(VIETNAM_TZ)
+
+            # Các ngày giao dịch trong tuần (Thứ 2 đến Thứ 6)
+            if weekday < 5:
+                # Nếu hiện tại đã sau 14h45 (kết thúc phiên ATC)
+                if now.strftime("%H:%M") >= "14:45":
+                    # Chưa có nến ngày hôm nay
+                    if last_cached_str < today_str:
+                        return True
+                    # Đã có nến hôm nay nhưng file cache được lưu trước 14h45 (chưa có giá chốt phiên ATC)
+                    if mtime.strftime("%Y-%m-%d") == today_str and mtime.strftime("%H:%M") < "14:45":
+                        return True
+            else:
+                # Cuối tuần: Ngày giao dịch gần nhất là Thứ 6
+                days_to_fri = weekday - 4
+                last_friday_str = (now - timedelta(days=days_to_fri)).strftime("%Y-%m-%d")
+                if last_cached_str < last_friday_str:
+                    return True
+
+            return False
+        except Exception:
+            return True
+
     def get_ticker_data(self, ticker: str, start_date: str = DEFAULT_START_DATE,
                         end_date: str = None, force_update: bool = False) -> pd.DataFrame:
         """
@@ -75,13 +121,18 @@ class DataLoader:
             end_date = get_vietnam_now().strftime("%Y-%m-%d")
 
         if cache_file.exists() and not force_update:
-            try:
-                cached_df = pd.read_csv(cache_file, parse_dates=['time'])
-                if not cached_df.empty:
-                    # Chế độ tiết kiệm tải / Ngoài giờ giao dịch: dùng trực tiếp cache không gọi mạng
-                    return cached_df.sort_values('time').reset_index(drop=True)
-            except Exception as e:
-                print(f"  [Cảnh báo] Lỗi đọc cache {ticker}: {e}, sẽ thử tải mới...")
+            if not self.is_cache_stale(cache_file):
+                try:
+                    cached_df = pd.read_csv(cache_file, parse_dates=['time'])
+                    if not cached_df.empty:
+                        # Chế độ tiết kiệm tải / Dữ liệu đã là chốt phiên chuẩn: dùng trực tiếp cache không gọi mạng
+                        return cached_df.sort_values('time').reset_index(drop=True)
+                except Exception as e:
+                    print(f"  [Cảnh báo] Lỗi đọc cache {ticker}: {e}, sẽ thử tải mới...")
+            else:
+                # Cache chưa có nến chốt ATC hoàn thiện -> Tự động nạp bổ sung từ sàn
+                print(f"  [Tự động đối soát EOD] {ticker}: Phát hiện cache chưa chốt phiên ATC -> Tự động đồng bộ nến EOD từ sàn...")
+                force_update = True
 
         # Nếu có cache và yêu cầu force_update=True: cập nhật bổ sung (incremental)
         if cache_file.exists():

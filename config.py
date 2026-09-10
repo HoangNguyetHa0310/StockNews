@@ -4,6 +4,37 @@ Cấu hình hệ thống Phân tích Định lượng & Dự đoán Machine Lear
 """
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
+import os
+
+# ==================== TỰ ĐỘNG ĐỌC BIẾN MÔI TRƯỜNG & VNSTOCK API KEY ====================
+def _load_env_file():
+    """Tự động đọc file .env nếu có mà không cần cài thêm thư viện phụ thuộc."""
+    env_path = Path(__file__).resolve().parent / ".env"
+    if env_path.exists():
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip("'\"")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+        except Exception:
+            pass
+
+_load_env_file()
+
+# Kích hoạt VNSTOCK API Key nếu có
+VNSTOCK_KEY = os.environ.get("VNSTOCK_API_KEY", "")
+if VNSTOCK_KEY:
+    try:
+        from vnstock.core import setup_api_key
+        setup_api_key(VNSTOCK_KEY)
+        print("[VNSTOCK] Đã thiết lập API Key thành công (Nâng cấp hạn mức dữ liệu)")
+    except Exception as e:
+        print(f"[VNSTOCK] Lưu ý khi nạp API Key: {e}")
 
 # ==================== MÚI GIỜ HỆ THỐNG ====================
 # Chuẩn hóa múi giờ Việt Nam (UTC+7 / Asia/Ho_Chi_Minh) cho toàn bộ backend,
@@ -112,8 +143,8 @@ MARKET_SCHEDULE_CONFIG = {
     "trading_start_time": "09:00",   # Bắt đầu phiên sáng (ATO)
     "lunch_start_time": "11:30",     # Bắt đầu nghỉ trưa
     "lunch_end_time": "13:00",       # Bắt đầu phiên chiều
-    "trading_end_time": "15:00",     # Đóng phiên chiều (ATC / Kết thúc giao dịch)
-    "enable_time_filter": True,      # Bật cơ chế lọc theo giờ (True: chỉ lấy giá cổ phiếu 9h-15h)
+    "trading_end_time": "15:15",     # Kéo dài đến 15:15 để nạp trọn vẹn kết quả khớp lệnh chốt phiên ATC
+    "enable_time_filter": True,      # Bật cơ chế lọc theo giờ (True: chỉ lấy giá cổ phiếu 9h-15h15)
     "news_always_realtime": True     # Tin tức & Rủi ro luôn cập nhật 24/7
 }
 
