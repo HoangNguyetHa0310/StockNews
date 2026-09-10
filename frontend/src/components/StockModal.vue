@@ -15,8 +15,14 @@
           <div class="min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
               <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-mono">{{ stock?.ticker }}</h3>
+              <span v-if="stock?.sector" class="px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                {{ stock?.sector }}
+              </span>
               <span v-html="getSignalBadge(stock?.signal)"></span>
             </div>
+            <p v-if="stock?.company_name" class="text-xs text-slate-600 dark:text-slate-300 font-medium truncate mt-0.5" :title="stock?.company_name">
+              {{ stock?.company_name }}
+            </p>
             <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
               Giá: <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(stock?.close) }}</span>
               <span :class="stock?.change_pct >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'" class="ml-1 font-semibold">

@@ -328,23 +328,24 @@
             <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center justify-between gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
               <div class="flex items-center gap-1.5">
                 <ArrowLeftRight class="w-3.5 h-3.5 shrink-0 animate-pulse" />
-                <span>Vuốt ngang bảng để xem đầy đủ cột Mua / Bán</span>
+                <span>Vuốt ngang xem Mua/Bán &bull; Bấm vào mã xem chi tiết</span>
               </div>
               <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded font-mono font-bold border border-cyan-500/20 shrink-0">Cố định Mã CP</span>
             </div>
 
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-theme-text border-separate border-spacing-0 min-w-[920px]">
+              <table class="w-full text-left text-xs text-theme-text border-separate border-spacing-0 min-w-[840px]">
                 <thead>
                   <tr class="bg-theme-subtle text-theme-sub text-[11px] font-bold uppercase tracking-wider select-none">
-                    <!-- Column: Mã & Doanh Nghiệp (Cố định sticky left-0) -->
+                    <!-- Column: Mã CP (Cố định sticky left-0, siêu gọn nhẹ) -->
                     <th 
                       @click="toggleSort('ticker')" 
-                      class="py-3 px-3 cursor-pointer transition select-none group sticky left-0 z-30 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] w-40 min-w-[140px] max-w-[160px]"
+                      class="py-3 px-2 sm:px-3 text-center sm:text-left cursor-pointer transition select-none group sticky left-0 z-30 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] w-16 sm:w-20 min-w-[65px] sm:min-w-[75px] max-w-[80px]"
                       :class="isSorted('ticker') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'bg-theme-subtle text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
+                      title="Bấm để sắp xếp theo Mã cổ phiếu"
                     >
-                      <div class="flex items-center gap-1">
-                        <span>Mã CP & Doanh Nghiệp</span>
+                      <div class="flex items-center justify-center sm:justify-start gap-1">
+                        <span>Mã CP</span>
                         <component :is="getSortIcon('ticker')" class="w-3.5 h-3.5 shrink-0" :class="getSortIconClass('ticker')" />
                       </div>
                     </th>
@@ -460,22 +461,16 @@
                     @click="$emit('select-stock', s)"
                     title="Bấm để xem biểu đồ TradingView & phân tích chi tiết mã này"
                   >
-                    <!-- Ticker & Company (Sticky cố định đứng yên khi cuộn ngang) -->
+                    <!-- Ticker (Cố định sticky left-0, tối ưu siêu gọn nhẹ - chỉ hiển thị Mã CP) -->
                     <td 
-                      class="py-3 px-3 sticky left-0 z-20 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-40 min-w-[140px] max-w-[160px]"
+                      class="py-2.5 sm:py-3 px-2 sm:px-3 text-center sm:text-left sticky left-0 z-20 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-16 sm:w-20 min-w-[65px] sm:min-w-[75px] max-w-[80px]"
                       :class="isSorted('ticker') ? 'bg-cyan-500/[0.08] dark:bg-cyan-500/[0.12]' : 'bg-theme-card group-hover:bg-theme-card-hover'"
                     >
-                      <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="font-bold text-sm text-theme-text group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition">
+                      <div class="flex items-center justify-center sm:justify-start">
+                        <span class="font-bold text-xs sm:text-sm font-mono text-cyan-600 dark:text-cyan-400 group-hover:underline">
                           {{ s.ticker }}
                         </span>
-                        <span class="text-[9px] font-sans px-1.5 py-0.5 rounded bg-theme-subtle text-theme-muted border border-theme-border truncate max-w-[95px]">
-                          {{ s.sector }}
-                        </span>
                       </div>
-                      <p class="text-[10px] font-sans text-theme-muted truncate mt-0.5" :title="s.company_name">
-                        {{ s.company_name }}
-                      </p>
                     </td>
 
                     <!-- Foreign Buy (Tr CP) -->
