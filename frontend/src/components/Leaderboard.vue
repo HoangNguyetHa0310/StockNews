@@ -156,45 +156,45 @@
                 </div>
               </th>
 
-              <!-- Cột Xác Suất Tăng AI (T+3) -->
+              <!-- Cột Dự Báo AI (T+3) -->
               <th 
-                class="py-3.5 px-4 cursor-pointer transition select-none group min-w-[180px] border-b border-theme-border bg-theme-subtle"
+                class="py-3.5 px-4 cursor-pointer transition select-none group min-w-[190px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'ml_prob_up' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('ml_prob_up')"
-                title="Bấm để sắp xếp theo Xác Suất Tăng AI (T+3)"
+                title="Dự báo xác suất giá tăng sau 3 phiên (T+3) do AI tính toán. Dưới 50% là xác suất thấp (khả năng giảm chiếm ưu thế)"
               >
                 <div class="flex items-center justify-center gap-1.5">
-                  <span>Xác Suất Tăng AI (T+3)</span>
+                  <span>Dự Báo AI (T+3)</span>
                   <ArrowUp v-if="sortKey === 'ml_prob_up' && sortOrder === 'asc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowDown v-else-if="sortKey === 'ml_prob_up' && sortOrder === 'desc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowUpDown v-else class="w-3 h-3 text-theme-muted/40 group-hover:text-cyan-500 transition" />
                 </div>
               </th>
 
-              <!-- Cột Điểm Quant (100) -->
+              <!-- Cột Điểm Tổng Hợp Quant (100) -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group min-w-[140px] border-b border-theme-border bg-theme-subtle"
+                class="py-3.5 px-3 cursor-pointer transition select-none group min-w-[150px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'total_score' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('total_score')"
-                title="Bấm để sắp xếp theo Điểm Quant (100) - Điểm định lượng đa nhân tố tổng hợp từ Xu hướng, Động lượng, Dòng tiền & AI"
+                title="Điểm định lượng đa nhân tố tổng hợp từ Xu hướng, Động lượng, Dòng tiền & AI (0-100) - Quyết định trực tiếp khuyến nghị Mua/Bán"
               >
                 <div class="flex items-center justify-center gap-1.5">
-                  <span>Điểm Quant (100)</span>
+                  <span>Điểm Tổng Hợp (100)</span>
                   <ArrowUp v-if="sortKey === 'total_score' && sortOrder === 'asc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowDown v-else-if="sortKey === 'total_score' && sortOrder === 'desc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowUpDown v-else class="w-3 h-3 text-theme-muted/40 group-hover:text-cyan-500 transition" />
                 </div>
               </th>
               
-              <!-- Cột Khuyến Nghị -->
+              <!-- Cột Khuyến Nghị Đầu Tư -->
               <th 
-                class="py-3.5 px-4 cursor-pointer transition select-none group whitespace-nowrap min-w-[150px] border-b border-theme-border bg-theme-subtle"
+                class="py-3.5 px-4 cursor-pointer transition select-none group whitespace-nowrap min-w-[160px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'signal' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('signal')"
-                title="Bấm để sắp xếp theo Khuyến Nghị: Mua mạnh -> Mua -> Quan sát -> Theo dõi (Chờ AI) -> Bán -> Bán mạnh"
+                title="Khuyến nghị đầu tư Mua/Bán được kết luận từ Điểm Tổng Hợp & Dự báo AI"
               >
                 <div class="flex items-center justify-center gap-1.5">
-                  <span>Khuyến Nghị</span>
+                  <span>Khuyến Nghị Đầu Tư</span>
                   <ArrowUp v-if="sortKey === 'signal' && sortOrder === 'asc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowDown v-else-if="sortKey === 'signal' && sortOrder === 'desc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowUpDown v-else class="w-3 h-3 text-theme-muted/40 group-hover:text-cyan-500 transition" />
@@ -294,21 +294,28 @@
               <td 
                 class="py-3.5 px-4 whitespace-nowrap border-b border-theme-border"
                 :class="sortKey === 'ml_prob_up' ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
+                :title="`Khả năng tăng giá T+3: ${s.ml_prob_up}% | Khả năng giảm/đi ngang: ${(100 - s.ml_prob_up).toFixed(1)}%`"
               >
-                <div class="flex items-center justify-center gap-2.5">
+                <div class="flex items-center justify-center gap-2">
                   <span 
-                    class="w-11 text-right font-semibold"
-                    :class="s.ml_prob_up >= 55 ? 'text-emerald-500 dark:text-emerald-400' : 'text-theme-sub'"
+                    class="w-12 text-right font-semibold text-xs"
+                    :class="s.ml_prob_up >= 55 ? 'text-emerald-500 dark:text-emerald-400' : (s.ml_prob_up >= 50 ? 'text-cyan-500 dark:text-cyan-400' : (s.ml_prob_up >= 40 ? 'text-amber-500 dark:text-amber-400' : 'text-rose-500 dark:text-rose-400'))"
                   >
                     {{ s.ml_prob_up }}%
                   </span>
-                  <div class="w-20 bg-theme-subtle-2 rounded-full h-1.5 overflow-hidden">
+                  <div class="w-16 bg-theme-subtle-2 rounded-full h-1.5 overflow-hidden">
                     <div 
                       class="h-full transition-all duration-300 rounded-full"
-                      :class="s.ml_prob_up >= 60 ? 'bg-emerald-500' : (s.ml_prob_up <= 40 ? 'bg-rose-500' : 'bg-cyan-500')"
+                      :class="s.ml_prob_up >= 55 ? 'bg-emerald-500' : (s.ml_prob_up >= 50 ? 'bg-cyan-500' : (s.ml_prob_up >= 40 ? 'bg-amber-500' : 'bg-rose-500'))"
                       :style="{ width: Math.min(Math.max(s.ml_prob_up, 10), 100) + '%' }"
                     ></div>
                   </div>
+                  <span 
+                    class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                    :class="s.ml_prob_up >= 50 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'"
+                  >
+                    {{ s.ml_prob_up >= 50 ? 'Khả quan' : 'Thấp' }}
+                  </span>
                 </div>
               </td>
               

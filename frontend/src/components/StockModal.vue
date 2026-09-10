@@ -65,10 +65,19 @@
           </div>
 
           <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Xác Suất Tăng AI (T+3)</span>
-            <div class="text-base sm:text-lg font-bold font-mono text-cyan-600 dark:text-cyan-300 mt-0.5">{{ stock?.ml_prob_up }}%</div>
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Dự Báo AI T+3 (Khả năng tăng)</span>
+            <div 
+              class="text-base sm:text-lg font-bold font-mono mt-0.5"
+              :class="stock?.ml_prob_up >= 50 ? 'text-emerald-500 dark:text-emerald-400' : 'text-amber-500 dark:text-amber-400'"
+            >
+              {{ stock?.ml_prob_up }}% <span class="text-[10px] font-medium opacity-80">({{ stock?.ml_prob_up >= 50 ? 'Khả quan' : 'Thấp' }})</span>
+            </div>
             <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
-              <div class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full" :style="{ width: stock?.ml_prob_up + '%' }"></div>
+              <div 
+                class="h-full rounded-full transition-all duration-300"
+                :class="stock?.ml_prob_up >= 50 ? 'bg-emerald-500' : 'bg-amber-500'" 
+                :style="{ width: stock?.ml_prob_up + '%' }"
+              ></div>
             </div>
           </div>
         </div>
