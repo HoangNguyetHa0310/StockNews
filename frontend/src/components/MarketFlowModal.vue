@@ -1,11 +1,12 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-60 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    style="padding-top: max(1.25rem, env(safe-area-inset-top, 24px)); padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 24px));"
     @click.self="$emit('close')"
   >
     <div 
-      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-7xl max-h-[94vh] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
+      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-7xl max-h-[calc(100dvh-3rem)] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
     >
       <!-- ==================== MODAL HEADER ==================== -->
       <div class="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
@@ -30,10 +31,10 @@
 
         <button 
           @click="$emit('close')"
-          class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-theme-subtle hover:bg-theme-subtle-2 text-theme-muted hover:text-theme-text flex items-center justify-center transition border border-theme-border shadow-sm shrink-0"
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 flex items-center justify-center transition border border-theme-border shadow-md shrink-0 active:scale-95"
           title="Đóng cửa sổ (Esc)"
         >
-          <X class="w-4 h-4 sm:w-5 sm:h-5" />
+          <X class="w-5 h-5 text-slate-600 dark:text-slate-300" />
         </button>
       </div>
 
@@ -599,8 +600,8 @@
       </div>
 
       <!-- ==================== MODAL FOOTER ==================== -->
-      <div class="px-6 py-4 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-        <div class="text-theme-muted text-[11px] font-mono">
+      <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div class="text-theme-muted text-[11px] font-mono text-center sm:text-left">
           <span>Tổng số mã VN30: <strong>{{ allStocksCount }}</strong> cổ phiếu</span>
           <span class="mx-2">•</span>
           <span>Hiển thị: <strong>{{ displayedStocks.length }}</strong> mã</span>
@@ -608,9 +609,10 @@
 
         <button 
           @click="$emit('close')"
-          class="px-5 py-2 rounded-xl bg-theme-card border border-theme-border hover:border-cyan-500/50 text-theme-text font-semibold transition text-xs shadow-sm"
+          class="w-full sm:w-auto min-w-[200px] py-2.5 px-6 rounded-xl sm:rounded-2xl bg-slate-200/90 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold transition text-sm shadow-md active:scale-95 flex items-center justify-center gap-2 border border-theme-border"
         >
-          Đóng cửa sổ
+          <X class="w-4 h-4 text-slate-500 dark:text-slate-400" />
+          <span>Đóng Cửa Sổ</span>
         </button>
       </div>
 

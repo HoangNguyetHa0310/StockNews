@@ -1,11 +1,12 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-60 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    style="padding-top: max(1.25rem, env(safe-area-inset-top, 24px)); padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 24px));"
     @click.self="$emit('close')"
   >
     <div 
-      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-6xl max-h-[94vh] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
+      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-6xl max-h-[calc(100dvh-3rem)] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
     >
       <!-- Modal Header -->
       <div class="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
@@ -30,10 +31,10 @@
 
         <button 
           @click="$emit('close')" 
-          class="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 flex items-center justify-center transition border border-theme-border shadow-md shrink-0 active:scale-95"
           title="Đóng cửa sổ (Esc)"
         >
-          <X class="w-4 h-4 sm:w-5 sm:h-5" />
+          <X class="w-5 h-5 text-slate-600 dark:text-slate-300" />
         </button>
       </div>
 
@@ -386,16 +387,17 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-theme-text-muted">
-        <div class="flex items-center gap-2">
-          <ShieldAlert class="w-4 h-4 text-amber-500" />
+      <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-theme-text-muted">
+        <div class="flex items-center gap-2 text-center sm:text-left">
+          <ShieldAlert class="w-4 h-4 text-amber-500 shrink-0" />
           <span>Báo cáo được tổng hợp tự động từ mô hình định lượng đa nhân tố và dữ liệu nến phiên gần nhất.</span>
         </div>
         <button 
           @click="$emit('close')"
-          class="px-5 py-2 rounded-xl bg-theme-subtle-2 hover:bg-theme-border font-semibold text-theme-text transition"
+          class="w-full sm:w-auto min-w-[200px] py-2.5 px-6 rounded-xl sm:rounded-2xl bg-slate-200/90 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold transition text-sm shadow-md active:scale-95 flex items-center justify-center gap-2 border border-theme-border"
         >
-          Đóng Báo Cáo
+          <X class="w-4 h-4 text-slate-500 dark:text-slate-400" />
+          <span>Đóng Báo Cáo</span>
         </button>
       </div>
 

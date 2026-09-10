@@ -1,10 +1,11 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-theme-backdrop backdrop-blur-md animate-fade-in"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    style="padding-top: max(1rem, env(safe-area-inset-top, 24px)); padding-bottom: max(1rem, env(safe-area-inset-bottom, 24px));"
     @click.self="$emit('close')"
   >
-    <div class="relative w-full max-w-5xl max-h-[94vh] sm:max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200">
+    <div class="relative w-full max-w-5xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200 my-auto">
       
       <!-- Modal Header -->
       <div class="p-4 sm:p-6 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
@@ -35,9 +36,10 @@
 
         <button 
           @click="$emit('close')" 
-          class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-theme-subtle hover:bg-theme-subtle-2 text-theme-muted hover:text-theme-text flex items-center justify-center transition border border-theme-border shadow-sm shrink-0"
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-theme-text flex items-center justify-center transition border border-theme-border shadow-md shrink-0 active:scale-95"
+          title="Đóng cửa sổ"
         >
-          <X class="w-4 h-4 sm:w-5 sm:h-5" />
+          <X class="w-5 h-5 text-slate-600 dark:text-slate-300" />
         </button>
       </div>
 
@@ -190,13 +192,14 @@
 
       </div>
 
-      <!-- Modal Footer -->
-      <div class="p-4 border-t border-theme-border bg-theme-subtle flex justify-end">
+      <!-- Modal Footer (Nút Đóng đưa ra giữa và phóng to rõ ràng theo yêu cầu người dùng) -->
+      <div class="p-3.5 sm:p-4 border-t border-theme-border bg-theme-subtle flex justify-center items-center">
         <button 
           @click="$emit('close')" 
-          class="px-5 py-2 rounded-xl bg-theme-subtle-2 hover:bg-theme-border text-theme-text text-xs font-semibold transition shadow-sm"
+          class="w-full sm:w-auto min-w-[220px] sm:min-w-[280px] py-2.5 sm:py-3 px-8 rounded-xl sm:rounded-2xl bg-slate-200/90 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm sm:text-base font-bold transition shadow-md active:scale-95 flex items-center justify-center gap-2 border border-theme-border"
         >
-          Đóng
+          <X class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 dark:text-slate-400" />
+          <span>Đóng Cửa Sổ</span>
         </button>
       </div>
 
