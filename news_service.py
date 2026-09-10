@@ -33,6 +33,7 @@ class NewsService:
                 "sentiment_label": "Trung Tính / Thận Trọng",
                 "risk_level": "medium",
                 "source": "VnEconomy / Cổng TT NHNN",
+                "url": "https://vneconomy.vn/tai-chinh.htm",
                 "published_at": "15 phút trước",
                 "time_str": now_vn,
                 "badge_color": "cyan"
@@ -50,6 +51,7 @@ class NewsService:
                 "sentiment_label": "Tích Cực Mạnh",
                 "risk_level": "low",
                 "source": "UBCKNN / Báo Đầu Tư",
+                "url": "https://baodautu.vn/chung-khoan-d4/",
                 "published_at": "40 phút trước",
                 "time_str": now_vn,
                 "badge_color": "emerald"
@@ -67,6 +69,7 @@ class NewsService:
                 "sentiment_label": "Biến Động Rủi Ro",
                 "risk_level": "high",
                 "source": "Cafef / Tổng hợp",
+                "url": "https://cafef.vn/thi-truong-vang.chn",
                 "published_at": "1 giờ trước",
                 "time_str": now_vn,
                 "badge_color": "amber"
@@ -84,6 +87,7 @@ class NewsService:
                 "sentiment_label": "Tích Cực",
                 "risk_level": "low",
                 "source": "HOSE / Dữ liệu Quant",
+                "url": "https://www.hsx.vn/",
                 "published_at": "1.5 giờ trước",
                 "time_str": now_vn,
                 "badge_color": "emerald"
@@ -103,6 +107,7 @@ class NewsService:
                 "sentiment_label": "Rủi Ro Địa Chính Trị",
                 "risk_level": "high",
                 "source": "Reuters / Bloomberg",
+                "url": "https://www.reuters.com/markets/commodities/",
                 "published_at": "25 phút trước",
                 "time_str": now_vn,
                 "badge_color": "rose"
@@ -120,6 +125,7 @@ class NewsService:
                 "sentiment_label": "Tăng Trưởng Mạnh (Vàng)",
                 "risk_level": "medium",
                 "source": "Kitco / Financial Times",
+                "url": "https://www.kitco.com/price/precious-metals",
                 "published_at": "45 phút trước",
                 "time_str": now_vn,
                 "badge_color": "amber"
@@ -137,6 +143,7 @@ class NewsService:
                 "sentiment_label": "Tích Cực Trung Hạn",
                 "risk_level": "medium",
                 "source": "CoinDesk / The Block",
+                "url": "https://www.coindesk.com/",
                 "published_at": "1 giờ trước",
                 "time_str": now_vn,
                 "badge_color": "cyan"
@@ -154,6 +161,7 @@ class NewsService:
                 "sentiment_label": "Giằng Co / Chờ Đợi",
                 "risk_level": "medium",
                 "source": "Wall Street Journal / CNBC",
+                "url": "https://www.cnbc.com/economy/",
                 "published_at": "2 giờ trước",
                 "time_str": now_vn,
                 "badge_color": "indigo"

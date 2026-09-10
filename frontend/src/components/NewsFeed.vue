@@ -145,14 +145,37 @@
           </div>
 
           <!-- Title -->
-          <h3 class="text-sm sm:text-base font-bold text-theme-text leading-snug hover:text-cyan-500 transition cursor-pointer">
-            {{ item.title }}
+          <h3 class="text-sm sm:text-base font-bold text-theme-text leading-snug hover:text-cyan-500 transition">
+            <a 
+              v-if="item.url" 
+              :href="item.url" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="hover:text-cyan-500 transition-colors"
+            >
+              {{ item.title }}
+            </a>
+            <span v-else>{{ item.title }}</span>
           </h3>
 
           <!-- Summary -->
           <p class="text-xs text-theme-sub leading-relaxed">
             {{ item.summary }}
           </p>
+
+          <!-- Source Citation Link (Link bài viết trích dẫn) -->
+          <div v-if="item.url" class="pt-1 flex items-center">
+            <a 
+              :href="item.url" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-theme-subtle hover:bg-cyan-500/10 border border-theme-border hover:border-cyan-500/30 text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 transition-all group/link shadow-sm"
+              title="Mở bài viết trích dẫn gốc"
+            >
+              <ExternalLink class="w-3.5 h-3.5 shrink-0 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+              <span>Nguồn trích dẫn: {{ item.source }}</span>
+            </a>
+          </div>
         </div>
 
         <!-- Card Footer: Impacted Asset & Sentiment -->
@@ -186,7 +209,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Clock, Search } from 'lucide-vue-next'
+import { Clock, Search, ExternalLink } from 'lucide-vue-next'
 import { fetchNewsFeed } from '../api'
 
 const newsList = ref([])
