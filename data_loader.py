@@ -11,7 +11,8 @@ from pathlib import Path
 from vnstock.api.quote import Quote
 from config import (
     DATA_DIR, VN30_TICKERS, MARKET_INDICES,
-    DEFAULT_START_DATE, TODAY_DATE, API_CONFIG
+    DEFAULT_START_DATE, TODAY_DATE, API_CONFIG,
+    get_vietnam_now
 )
 
 
@@ -64,12 +65,14 @@ class DataLoader:
         return pd.DataFrame()
 
     def get_ticker_data(self, ticker: str, start_date: str = DEFAULT_START_DATE,
-                        end_date: str = TODAY_DATE, force_update: bool = False) -> pd.DataFrame:
+                        end_date: str = None, force_update: bool = False) -> pd.DataFrame:
         """
         Lấy dữ liệu cổ phiếu: ưu tiên từ cache, tự động tải bù phiên mới nếu cần.
         """
         ticker = ticker.upper()
         cache_file = self._get_cache_path(ticker)
+        if end_date is None:
+            end_date = get_vietnam_now().strftime("%Y-%m-%d")
 
         if cache_file.exists() and not force_update:
             try:
@@ -98,6 +101,13 @@ class DataLoader:
                         print(f"[{ticker}] Cập nhật bổ sung nến mới từ {next_day} đến {end_date}...")
                         new_df = self.fetch_from_api(ticker, start_date=next_day, end_date=end_date)
                         if new_df is not None and not new_df.empty:
+                            # Cơ chế phòng vệ toàn vẹn dữ liệu: phát hiện và chặn nến nhảy giá dị thường (>35%)
+                            last_price = cached_df['close'].iloc[-1]
+                            new_price = new_df['close'].iloc[0]
+                            if last_price > 0 and abs(new_price / last_price - 1.0) > 0.35:
+                                print(f"  [Cảnh báo an toàn] {ticker}: Nến mới ({new_price}) lệch > 35% so với giá nến cũ ({last_price}). Giữ nguyên cache an toàn.")
+                                return cached_df
+
                             combined = pd.concat([cached_df, new_df]).drop_duplicates(subset=['time']).sort_values('time').reset_index(drop=True)
                             combined.to_csv(cache_file, index=False)
                             time.sleep(self.sleep_seconds)
@@ -115,10 +125,12 @@ class DataLoader:
         return df
 
     def get_market_data(self, index_symbol: str = "VNINDEX", start_date: str = DEFAULT_START_DATE,
-                        end_date: str = TODAY_DATE, force_update: bool = False) -> pd.DataFrame:
+                        end_date: str = None, force_update: bool = False) -> pd.DataFrame:
         """
         Lấy dữ liệu chỉ số thị trường (VNINDEX hoặc VN30).
         """
+        if end_date is None:
+            end_date = get_vietnam_now().strftime("%Y-%m-%d")
         return self.get_ticker_data(index_symbol, start_date=start_date, end_date=end_date, force_update=force_update)
 
     def load_all_vn30(self, force_update: bool = False) -> dict[str, pd.DataFrame]:
