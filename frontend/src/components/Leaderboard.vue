@@ -55,7 +55,7 @@
             BẢNG XẾP HẠNG 30 CỔ PHIẾU VN30
           </h2>
           <p class="text-[11px] sm:text-xs text-theme-sub mt-0.5">
-            Sắp xếp theo Điểm Định Lượng Đa Nhân Tố & Xác suất Tăng Học Máy (LightGBM)
+            Sắp xếp theo Điểm Tổng Hợp & Dự Báo Tăng Giảm (LightGBM AI)
           </p>
         </div>
         <div class="text-[11px] sm:text-xs font-mono text-theme-sub">
@@ -156,15 +156,15 @@
                 </div>
               </th>
 
-              <!-- Cột Dự Báo AI (T+3) -->
+              <!-- Cột Dự Báo Tăng Giảm -->
               <th 
                 class="py-3.5 px-4 cursor-pointer transition select-none group min-w-[190px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'ml_prob_up' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('ml_prob_up')"
-                title="Dự báo xác suất giá tăng sau 3 phiên (T+3) do AI tính toán. Dưới 50% là xác suất thấp (khả năng giảm chiếm ưu thế)"
+                title="Dự báo tăng giảm: Tỷ lệ xác suất giá tăng sau 3 phiên (T+3). Dưới 50% là cảnh báo nguy cơ giảm giá"
               >
                 <div class="flex items-center justify-center gap-1.5">
-                  <span>Dự Báo AI (T+3)</span>
+                  <span>Dự Báo Tăng Giảm</span>
                   <ArrowUp v-if="sortKey === 'ml_prob_up' && sortOrder === 'asc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowDown v-else-if="sortKey === 'ml_prob_up' && sortOrder === 'desc'" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 stroke-[2.5]" />
                   <ArrowUpDown v-else class="w-3 h-3 text-theme-muted/40 group-hover:text-cyan-500 transition" />

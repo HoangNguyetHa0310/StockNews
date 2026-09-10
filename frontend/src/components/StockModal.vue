@@ -65,7 +65,7 @@
           </div>
 
           <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Dự Báo AI T+3 (Khả năng tăng)</span>
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Dự Báo Tăng Giảm (T+3)</span>
             <div 
               class="text-base sm:text-lg font-bold font-mono mt-0.5"
               :class="stock?.ml_prob_up >= 50 ? 'text-emerald-500 dark:text-emerald-400' : 'text-amber-500 dark:text-amber-400'"
