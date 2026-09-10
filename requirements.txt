@@ -1,0 +1,27 @@
+# ==============================================================================
+# VN30 Quantitative & AI Intelligence Platform - Dependencies
+# ==============================================================================
+
+# Core Web & API Framework
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# Data Science & Machine Learning
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+lightgbm>=4.0.0
+joblib>=1.3.0
+
+# Market Data Source (Vietnam Stock Market)
+vnstock>=4.0.6
+vnai>=2.5.7
+
+# Network & Utilities
+requests>=2.31.0
+httpx>=0.27.0
+openpyxl>=3.1.0
+psutil>=5.9.0
+beautifulsoup4>=4.12.0
+python-dateutil>=2.8.0

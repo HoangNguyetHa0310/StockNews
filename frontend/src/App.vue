@@ -101,13 +101,6 @@
 
       </main>
 
-      <!-- Stock Detail Modal with TradingView Charts -->
-      <StockModal 
-        :is-open="isModalOpen" 
-        :stock="selectedStock" 
-        @close="closeStockModal" 
-      />
-
       <!-- Market Recommendation Report Modal (Báo cáo Phân bổ % & Lý do VN30) -->
       <MarketReportModal 
         :is-open="isReportModalOpen"
@@ -122,6 +115,13 @@
         :is-open="isFlowModalOpen"
         @close="isFlowModalOpen = false"
         @select-stock="openStockModal"
+      />
+
+      <!-- Stock Detail Modal with TradingView Charts (Hiển thị nổi lên trên các báo cáo) -->
+      <StockModal 
+        :is-open="isModalOpen" 
+        :stock="selectedStock" 
+        @close="closeStockModal" 
       />
 
       <!-- Footer -->
@@ -239,7 +239,10 @@ function startAutoRefreshTimer() {
 }
 
 function openStockModal(stock) {
-  selectedStock.value = stock
+  if (!stock) return
+  const ticker = typeof stock === 'string' ? stock : stock?.ticker
+  const fullStock = stocks.value.find(s => s.ticker === ticker)
+  selectedStock.value = fullStock ? { ...stock, ...fullStock } : stock
   isModalOpen.value = true
 }
 

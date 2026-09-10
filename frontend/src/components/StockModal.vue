@@ -1,5 +1,9 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-theme-backdrop backdrop-blur-md animate-fade-in">
+  <div 
+    v-if="isOpen" 
+    class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-theme-backdrop backdrop-blur-md animate-fade-in"
+    @click.self="$emit('close')"
+  >
     <div class="relative w-full max-w-5xl max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200">
       
       <!-- Modal Header -->

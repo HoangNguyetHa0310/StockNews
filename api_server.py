@@ -3,10 +3,14 @@
 FastAPI REST API Server cho Hệ thống Định lượng & Machine Learning VN30
 Cung cấp các RESTful endpoints phục vụ Web Frontend (Vue 3), Mobile App và Bot cảnh báo.
 """
+import os
+from pathlib import Path
 from datetime import datetime
 from typing import Optional, List
 import pandas as pd
 from fastapi import FastAPI, Query, HTTPException, BackgroundTasks
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -415,8 +419,34 @@ def get_news_risk_assessment():
     }
 
 
+# ==================== PHỤC VỤ GIAO DIỆN TĨNH VUE 3 (ALL-IN-ONE SPA) ====================
+FRONTEND_DIST = Path(__file__).resolve().parent / "frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        # Tránh can thiệp các API endpoint nếu bị gọi sai path
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API endpoint không tồn tại")
+
+        # Nếu yêu cầu file tĩnh cụ thể có sẵn trong thư mục dist (như favicon.ico, logo...)
+        target_file = FRONTEND_DIST / full_path
+        if full_path and target_file.exists() and target_file.is_file():
+            return FileResponse(target_file)
+
+        # Mặc định trả về index.html cho các route phía Vue SPA
+        index_file = FRONTEND_DIST / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Giao diện chưa được build.")
+
+
 if __name__ == "__main__":
-    host = SERVER_CONFIG.get("host", "127.0.0.1")
-    port = SERVER_CONFIG.get("port", 8000)
-    print(f"[*] Khởi động máy chủ API tại http://{host}:{port}")
-    uvicorn.run("api_server:app", host=host, port=port, reload=True)
+    host = os.environ.get("HOST", SERVER_CONFIG.get("host", "0.0.0.0"))
+    port = int(os.environ.get("PORT", SERVER_CONFIG.get("port", 8000)))
+    print(f"[*] Khởi động máy chủ tại http://{host}:{port}")
+    uvicorn.run("api_server:app", host=host, port=port, reload=False)

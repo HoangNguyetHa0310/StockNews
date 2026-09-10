@@ -1,6 +1,6 @@
-// API Client giao tiếp với FastAPI Backend
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+// Khi deploy All-in-One (chạy cùng origin trên Cloud), để rỗng '' để tự động gọi relative path.
+// Khi dev bằng Vite hoặc deploy tách biệt, ưu tiên VITE_API_BASE_URL hoặc fallback về localhost:8000.
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
 
 export async function fetchMarketOverview() {
   try {
