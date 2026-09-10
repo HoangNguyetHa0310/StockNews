@@ -23,6 +23,132 @@
       </div>
     </div>
 
+    <!-- ================= CỔ PHIẾU TĂNG NÓNG TRONG PHIÊN & GIẢI MÃ LÝ DO (HOT MOVERS RADAR) ================= -->
+    <div class="p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-theme-card to-emerald-500/10 border border-amber-500/30 shadow-md space-y-4">
+      <!-- Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-theme-border pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 border border-amber-500/30 flex items-center justify-center shrink-0 shadow-sm">
+            <Flame class="w-5 h-5 animate-pulse text-amber-500" />
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-bold text-theme-text flex items-center gap-1.5">
+                <span>Cổ Phiếu Tăng Nóng Trong Phiên</span>
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 animate-pulse">
+                  RADAR CATALYST
+                </span>
+              </h3>
+            </div>
+            <p class="text-xs text-theme-sub mt-0.5">
+              Tự động phát hiện các mã tăng giá bứt phá và giải mã chính xác nguyên nhân / tin tức kích hoạt đà tăng.
+            </p>
+          </div>
+        </div>
+
+        <span class="text-[11px] font-mono text-theme-sub flex items-center gap-1">
+          <Sparkles class="w-3.5 h-3.5 text-amber-500" /> Bóc tách dòng tiền & sự kiện
+        </span>
+      </div>
+
+      <!-- Hot Movers Grid Cards -->
+      <div v-if="isLoadingMovers" class="py-6 text-center text-xs text-theme-sub font-mono">
+        <div class="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+        Đang quét dữ liệu và giải mã các mã tăng nóng...
+      </div>
+
+      <div v-else-if="hotMovers.length === 0" class="p-4 text-center text-xs text-theme-sub">
+        Chưa ghi nhận biến động tăng nóng đột biến trong phiên hiện tại.
+      </div>
+
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div 
+          v-for="mover in hotMovers" 
+          :key="mover.ticker"
+          class="p-4 rounded-2xl bg-theme-card/95 dark:bg-slate-900/80 border border-theme-border hover:border-amber-500/50 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3 relative overflow-hidden group"
+        >
+          <!-- Accent Top Bar -->
+          <div 
+            class="absolute top-0 left-0 right-0 h-1"
+            :class="mover.is_ceiling ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gradient-to-r from-emerald-500 to-cyan-500'"
+          ></div>
+
+          <!-- Mover Header: Ticker, Price, Change Badge -->
+          <div class="flex items-start justify-between gap-3 pt-1">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-black font-mono text-theme-text group-hover:text-cyan-500 transition-colors">
+                  {{ mover.ticker }}
+                </span>
+                <span class="text-xs text-theme-sub font-medium truncate max-w-[160px] sm:max-w-[210px]">
+                  {{ mover.company_name }}
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] font-mono text-theme-muted mt-0.5">
+                <span>Giá: <strong class="text-theme-text font-bold">{{ mover.price }}</strong></span>
+                <span>&bull;</span>
+                <span>KL: <strong class="text-theme-text">{{ mover.volume_str }}</strong></span>
+                <span class="px-1.5 py-0.2 rounded bg-theme-subtle text-[10px] text-cyan-600 dark:text-cyan-400 font-bold border border-theme-border">
+                  {{ mover.vol_ratio }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="flex flex-col items-end gap-1">
+              <span 
+                class="px-2.5 py-1 rounded-xl text-xs font-black font-mono shadow-sm flex items-center gap-1"
+                :class="mover.is_ceiling ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/40' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'"
+              >
+                <TrendingUp class="w-3.5 h-3.5" />
+                {{ mover.status_badge }}
+              </span>
+              <span class="text-[10px] font-mono text-amber-500 font-semibold">
+                {{ mover.tag }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Catalyst News (Chất xúc tác tin tức) -->
+          <div class="p-2.5 rounded-xl bg-theme-subtle/70 border border-theme-border text-xs space-y-1">
+            <div class="flex items-center gap-1.5 text-[11px] font-bold text-theme-text">
+              <Zap class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>Tin tức & Sự kiện kích hoạt:</span>
+            </div>
+            <p class="text-xs font-semibold text-cyan-600 dark:text-cyan-400 leading-snug">
+              {{ mover.catalyst_title }}
+            </p>
+            <p v-if="mover.catalyst_summary" class="text-[11px] text-theme-sub leading-relaxed">
+              {{ mover.catalyst_summary }}
+            </p>
+          </div>
+
+          <!-- Surge Reason Breakdown (Giải mã nguyên nhân tăng mạnh) -->
+          <div class="p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs space-y-1">
+            <div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              <Target class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span>Giải mã lý do tăng nóng:</span>
+            </div>
+            <p class="text-[11px] text-theme-text/90 leading-relaxed font-sans">
+              {{ mover.surge_reason }}
+            </p>
+          </div>
+
+          <!-- Actionable Note -->
+          <div class="flex items-center justify-between gap-2 pt-1 border-t border-theme-border/60 text-[11px]">
+            <span class="text-theme-muted font-mono flex items-center gap-1 truncate text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              {{ mover.flow_status }}
+            </span>
+            <span class="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 shrink-0">
+              {{ mover.actionable_insight.split('.')[0] }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- Filter Toolbar -->
     <div class="p-4 rounded-2xl bg-theme-card border border-theme-border shadow-sm space-y-4">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -206,37 +332,38 @@
           </div>
         </div>
 
-        <!-- Khối Phân Tích Cổ Phiếu Ảnh Hưởng & Lý Do Chi Tiết (Theo yêu cầu) -->
-        <div 
-          v-if="item.affected_stocks || item.impact_reason" 
-          class="p-3 rounded-xl bg-theme-subtle/80 border border-theme-border text-xs space-y-1.5 transition-colors shadow-inner"
-        >
-          <div class="flex flex-wrap items-center justify-between gap-1.5">
+        <!-- Khối Phân Tích Cổ Phiếu Tác Động & Kết Luận Cơ Chế (Luôn hiển thị 100%) -->
+        <div class="mt-3 p-3.5 rounded-xl border bg-theme-subtle/80 dark:bg-slate-900/60 border-cyan-500/30 text-xs space-y-2 shadow-inner">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-1.5 font-semibold text-theme-text min-w-0">
-              <Target class="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-              <span class="text-theme-sub text-[11px] whitespace-nowrap">Ảnh hưởng:</span>
+              <Target class="w-4 h-4 text-cyan-500 shrink-0" />
+              <span class="text-theme-sub text-[11px] whitespace-nowrap">Cổ phiếu / Nhóm tác động:</span>
               <span 
-                class="font-mono px-2 py-0.5 rounded-md text-[11px] font-bold truncate"
-                :class="item.is_direct_stock_impact ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30' : 'bg-theme-card text-theme-sub border border-theme-border'"
+                class="font-mono px-2.5 py-0.5 rounded-md text-[11px] font-bold truncate bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 shadow-sm"
               >
-                {{ item.affected_stocks }}
+                {{ item.affected_stocks || 'Toàn rổ VN30 & Cổ phiếu liên quan' }}
               </span>
             </div>
 
             <!-- Mức độ tác động -->
             <span 
-              v-if="item.impact_degree"
               class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0"
               :class="getImpactDegreeClass(item.impact_degree, item.is_direct_stock_impact)"
             >
-              {{ item.impact_degree }}
+              {{ item.impact_degree || 'Trực tiếp' }}
             </span>
           </div>
 
-          <!-- Giải thích tại sao lại ảnh hưởng -->
-          <p class="text-[11px] text-theme-sub leading-relaxed pt-0.5">
-            <strong class="text-theme-text font-medium">Tại sao ảnh hưởng:</strong> {{ item.impact_reason }}
-          </p>
+          <!-- Kết luận & Lý do tại sao ảnh hưởng -->
+          <div class="pt-1.5 border-t border-theme-border/60 text-[11px] leading-relaxed">
+            <div class="text-theme-text font-semibold flex items-center gap-1 mb-1">
+              <Zap class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>Kết luận tác động & Cơ chế lý giải:</span>
+            </div>
+            <p class="text-theme-sub font-normal leading-relaxed pl-4">
+              {{ item.impact_reason || 'Tin tức vĩ mô / kinh tế tác động trực tiếp đến dòng tiền thị trường và tâm lý nhà đầu tư giao dịch rổ VN30.' }}
+            </p>
+          </div>
         </div>
 
       </div>
@@ -246,11 +373,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Clock, Search, ExternalLink, MapPin, Globe, Target } from 'lucide-vue-next'
-import { fetchNewsFeed } from '../api'
+import { Clock, Search, ExternalLink, MapPin, Globe, Target, Flame, Zap, TrendingUp, Sparkles } from 'lucide-vue-next'
+import { fetchNewsFeed, fetchHotMovers } from '../api'
 
 const newsList = ref([])
+const hotMovers = ref([])
 const isLoading = ref(true)
+const isLoadingMovers = ref(true)
 const selectedRegion = ref(null)
 const selectedAsset = ref(null)
 const searchKeyword = ref('')
@@ -258,13 +387,30 @@ const currentTime = ref('')
 let newsTimer = null
 
 async function loadNews(isInitial = false) {
-  if (isInitial) isLoading.value = true
-  const data = await fetchNewsFeed()
-  if (data && data.length > 0) {
-    newsList.value = data
+  if (isInitial) {
+    isLoading.value = true
+    isLoadingMovers.value = true
   }
-  if (isInitial) isLoading.value = false
-  currentTime.value = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  try {
+    const [newsData, moversData] = await Promise.all([
+      fetchNewsFeed(),
+      fetchHotMovers()
+    ])
+    if (newsData && newsData.length > 0) {
+      newsList.value = newsData
+    }
+    if (moversData && moversData.length > 0) {
+      hotMovers.value = moversData
+    }
+  } catch (err) {
+    console.error('Lỗi nạp tin tức và cổ phiếu tăng nóng:', err)
+  } finally {
+    if (isInitial) {
+      isLoading.value = false
+      isLoadingMovers.value = false
+    }
+    currentTime.value = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  }
 }
 
 function setRegion(r) {

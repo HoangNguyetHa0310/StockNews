@@ -121,3 +121,16 @@ export async function fetchMarketTradingFlow(period = 'today') {
   }
 }
 
+export async function fetchHotMovers() {
+  try {
+    const res = await fetch(`${API_BASE}/api/news/hot-movers`)
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    const json = await res.json()
+    return json.data || []
+  } catch (err) {
+    console.error('Lỗi lấy danh sách cổ phiếu tăng nóng:', err)
+    return []
+  }
+}
+
+

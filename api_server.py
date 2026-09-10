@@ -452,6 +452,17 @@ def get_news_risk_assessment():
     }
 
 
+@app.get("/api/news/hot-movers", tags=["Cổ Phiếu Tăng Nóng & Giải Mã"])
+def get_hot_movers():
+    """Danh sách cổ phiếu tăng nóng trong phiên và giải mã nguyên nhân / tin tức kích hoạt."""
+    movers = NEWS_SERVICE.get_hot_movers(state=STATE)
+    return {
+        "status": "success",
+        "count": len(movers),
+        "data": movers
+    }
+
+
 # ==================== PHỤC VỤ GIAO DIỆN TĨNH VUE 3 (ALL-IN-ONE SPA) ====================
 FRONTEND_DIST = Path(__file__).resolve().parent / "frontend" / "dist"
 
