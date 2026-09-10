@@ -67,23 +67,23 @@
       <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center justify-between gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
         <div class="flex items-center gap-1.5">
           <ArrowLeftRight class="w-3.5 h-3.5 shrink-0 animate-pulse" />
-          <span>Vuốt ngang để xem 11 chỉ số còn lại</span>
+          <span>Vuốt ngang để xem các chỉ số còn lại</span>
         </div>
-        <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded font-mono font-bold border border-cyan-500/20 shrink-0">2 cột cố định</span>
+        <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded font-mono font-bold border border-cyan-500/20 shrink-0">Cố định Mã CK</span>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs min-w-[980px] border-separate border-spacing-0">
           <thead class="bg-theme-subtle text-theme-sub font-semibold text-[11px] uppercase tracking-wider select-none">
             <tr>
-              <!-- Cột 1: Hạng (Cố định đứng yên / Sticky) -->
-              <th class="py-3.5 px-2 text-center w-12 min-w-[48px] max-w-[48px] text-theme-muted sticky left-0 z-30 bg-theme-subtle border-b border-theme-border">
+              <!-- Cột 1: Hạng (Ẩn trên mobile để tiết kiệm diện tích, cố định đứng yên trên desktop) -->
+              <th class="hidden md:table-cell py-3.5 px-2 text-center w-12 min-w-[48px] max-w-[48px] text-theme-muted md:sticky md:left-0 z-30 bg-theme-subtle border-b border-theme-border">
                 Hạng
               </th>
 
-              <!-- Cột 2: Mã CK (Cố định đứng yên / Sticky) -->
+              <!-- Cột 2: Mã CK (Cố định đứng yên: sát lề trái left-0 trên mobile, cạnh cột hạng md:left-12 trên desktop) -->
               <th 
-                class="py-3.5 px-3 cursor-pointer transition select-none group w-20 min-w-[76px] max-w-[80px] sticky left-12 z-30 bg-theme-subtle border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)]"
+                class="py-3.5 px-3 cursor-pointer transition select-none group w-20 min-w-[76px] max-w-[80px] sticky left-0 md:left-12 z-30 bg-theme-subtle border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)]"
                 :class="sortKey === 'ticker' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('ticker')"
                 title="Bấm để sắp xếp theo Mã CK"
@@ -244,14 +244,14 @@
               @click="$emit('select-stock', s)"
               class="hover:bg-theme-card-hover transition duration-150 cursor-pointer group"
             >
-              <!-- Cột 1: Hạng (Cố định đứng yên / Sticky) -->
-              <td class="py-3.5 px-2 text-center text-theme-muted text-[11px] font-semibold sticky left-0 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-theme-border transition-colors w-12 min-w-[48px] max-w-[48px]">
+              <!-- Cột 1: Hạng (Ẩn trên mobile, cố định đứng yên trên desktop) -->
+              <td class="hidden md:table-cell py-3.5 px-2 text-center text-theme-muted text-[11px] font-semibold md:sticky md:left-0 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-theme-border transition-colors w-12 min-w-[48px] max-w-[48px]">
                 {{ idx + 1 }}
               </td>
               
-              <!-- Cột 2: Mã CK (Cố định đứng yên / Sticky) -->
+              <!-- Cột 2: Mã CK (Cố định đứng yên: sát lề trái left-0 trên mobile, cạnh cột hạng md:left-12 trên desktop) -->
               <td 
-                class="py-3.5 px-3 font-bold text-theme-text group-hover:text-cyan-500 transition text-sm sticky left-12 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-20 min-w-[76px] max-w-[80px]"
+                class="py-3.5 px-3 font-bold text-theme-text group-hover:text-cyan-500 transition text-sm sticky left-0 md:left-12 z-20 bg-theme-card group-hover:bg-theme-card-hover border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-20 min-w-[76px] max-w-[80px]"
                 :class="sortKey === 'ticker' ? 'text-cyan-500 font-extrabold' : ''"
               >
                 <span>{{ s.ticker }}</span>
