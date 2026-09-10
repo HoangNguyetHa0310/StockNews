@@ -312,6 +312,17 @@ def get_vn30_leaderboard(
     reverse = (order.lower() == "desc")
     if sort_by in ["total_score", "ml_prob_up", "change_pct", "rsi", "close", "vol_vs_ma20"]:
         results.sort(key=lambda x: x.get(sort_by, 0), reverse=reverse)
+    elif sort_by == "signal":
+        def get_signal_rank(sig):
+            s = str(sig or "").upper()
+            if "MUA MẠNH" in s: return 6
+            if "MUA" in s: return 5
+            if "QUAN SÁT" in s: return 4
+            if "THEO DÕI" in s: return 3
+            if "BÁN MẠNH" in s: return 1
+            if "BÁN" in s: return 2
+            return 3.5
+        results.sort(key=lambda x: (get_signal_rank(x.get("signal")), x.get("total_score", 0)), reverse=reverse)
 
     return {
         "status": "success",

@@ -176,7 +176,7 @@
                 class="py-3.5 px-3 cursor-pointer transition select-none group min-w-[140px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'total_score' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('total_score')"
-                title="Bấm để sắp xếp theo Điểm Quant (100)"
+                title="Bấm để sắp xếp theo Điểm Quant (100) - Điểm định lượng đa nhân tố tổng hợp từ Xu hướng, Động lượng, Dòng tiền & AI"
               >
                 <div class="flex items-center justify-center gap-1.5">
                   <span>Điểm Quant (100)</span>
@@ -191,7 +191,7 @@
                 class="py-3.5 px-4 cursor-pointer transition select-none group whitespace-nowrap min-w-[150px] border-b border-theme-border bg-theme-subtle"
                 :class="sortKey === 'signal' ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500'"
                 @click="sortBy('signal')"
-                title="Bấm để sắp xếp theo Khuyến Nghị"
+                title="Bấm để sắp xếp theo Khuyến Nghị: Mua mạnh -> Mua -> Quan sát -> Theo dõi (Chờ AI) -> Bán -> Bán mạnh"
               >
                 <div class="flex items-center justify-center gap-1.5">
                   <span>Khuyến Nghị</span>
@@ -399,6 +399,17 @@ function sortBy(key) {
   }
 }
 
+function getSignalRank(signal) {
+  const s = (signal || '').toUpperCase()
+  if (s.includes('MUA MẠNH')) return 6
+  if (s.includes('MUA')) return 5
+  if (s.includes('QUAN SÁT')) return 4
+  if (s.includes('THEO DÕI')) return 3
+  if (s.includes('BÁN MẠNH')) return 1
+  if (s.includes('BÁN')) return 2
+  return 3.5
+}
+
 const filteredStocks = computed(() => {
   let list = [...props.stocks]
 
@@ -419,6 +430,17 @@ const filteredStocks = computed(() => {
 
   // Sort
   list.sort((a, b) => {
+    if (sortKey.value === 'signal') {
+      const rankA = getSignalRank(a.signal)
+      const rankB = getSignalRank(b.signal)
+      if (rankA !== rankB) {
+        return sortOrder.value === 'asc' ? rankA - rankB : rankB - rankA
+      }
+      const scoreA = a.total_score ?? 0
+      const scoreB = b.total_score ?? 0
+      return sortOrder.value === 'asc' ? scoreA - scoreB : scoreB - scoreA
+    }
+
     const va = a[sortKey.value] ?? 0
     const vb = b[sortKey.value] ?? 0
     if (typeof va === 'string') {
