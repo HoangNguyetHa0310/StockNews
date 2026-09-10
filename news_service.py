@@ -98,63 +98,257 @@ class NewsService:
 
         return raw_items
 
-    def _classify_article(self, item: Dict) -> Dict:
-        """Tự động phân loại tài sản, tag và đánh giá sắc thái (sentiment) của bài viết."""
-        text = (item["title"] + " " + item["summary"]).lower()
+    def _analyze_impact(self, text: str, title: str, summary: str, region: str) -> Dict:
+        """
+        Phân tích chuyên sâu tác động tới cổ phiếu / nhóm ngành:
+        - Xác định rõ mã cổ phiếu hoặc nhóm ngành cụ thể chịu tác động.
+        - Giải thích cơ chế TẠI SAO lại ảnh hưởng (lý do kinh tế, dòng tiền, pháp lý, chi phí).
+        - Nhận diện chính xác tin tức sự cố / tai nạn xã hội để KHÔNG gắn nhãn sai là ảnh hưởng VN30.
+        """
+        # 0. Kiểm tra sự cố / tai nạn dân sự / tin xã hội quốc tế
+        incident_words = [
+            "cháy phà", "tai nạn", "thiệt mạng", "mất tích", "động đất", "cháy nhà", 
+            "xe khách", "cứu hộ", "sập cầu", "lật tàu", "vụ nổ", "rơi máy bay dân sự",
+            "chết người", "đuối nước", "hỏa hoạn khu dân cư", "cháy rừng"
+        ]
+        is_social_incident = any(w in text for w in incident_words)
 
-        # 1. Phân loại tài sản
-        asset_category = "stocks"
-        asset_tags = ["Cổ Phiếu", "VN30"]
-        impact_asset = "Cổ Phiếu VN30"
+        finance_keywords = [
+            "cổ phiếu", "chứng khoán", "doanh thu", "lợi nhuận", "vnindex", "vn30", 
+            "ngân hàng", "bất động sản", "tín dụng", "lãi suất", "tỷ giá", "thép", 
+            "dầu khí", "bán lẻ", "fpt", "hpg", "vhm", "vic", "vcb"
+        ]
+        has_finance_context = any(w in text for w in finance_keywords)
+
+        if is_social_incident and not has_finance_context:
+            return {
+                "affected_stocks": "Không ảnh hưởng trực tiếp đến rổ VN30",
+                "impact_reason": "Sự việc tai nạn xã hội/hàng hải dân sự đơn lẻ, không tác động đến hoạt động sản xuất kinh doanh, chuỗi cung ứng hay định giá của các doanh nghiệp niêm yết trên TTCK Việt Nam.",
+                "impact_degree": "Không ảnh hưởng",
+                "is_direct_stock_impact": False,
+                "asset_category": "politics",
+                "asset_tags": ["Quốc Tế" if region == "international" else "Xã Hội", "Sự Cố"],
+                "impact_asset": "Tâm lý Xã hội / Vận tải",
+                "sentiment_override": ("neutral", "Tin Xã Hội / Không ảnh hưởng VN30", "cyan", "low")
+            }
+
+        # 1. Quét theo từng mã cổ phiếu VN30 cụ thể (Tên mã hoặc tên tập đoàn)
+        stock_rules = [
+            (
+                ["hòa phát", "hpg", "thép hòa phát", "dung quất", "thép thanh", "quặng sắt", "hrc", "giá thép"],
+                "HPG (Tập đoàn Hòa Phát)",
+                "Biến động giá thép và nhu cầu xây dựng/đầu tư công tác động trực tiếp đến sản lượng tiêu thụ và biên lợi nhuận gộp của Hòa Phát.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "HPG", "Ngành Thép"]
+            ),
+            (
+                ["fpt", "fpt software", "fpt telecom", "chíp bán dẫn", "phần mềm fpt", "trí tuệ nhân tạo", "ai việt nam"],
+                "FPT (Tập đoàn FPT)",
+                "Tăng trưởng hợp đồng xuất khẩu phần mềm, nhu cầu chuyển đổi số toàn cầu và phát triển công nghệ AI thúc đẩy doanh thu và định giá P/E của FPT.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "FPT", "Công Nghệ"]
+            ),
+            (
+                ["vinhomes", "vingroup", "vincom retail", "vhm", "vic", "vre", "vinfast"],
+                "VHM, VIC, VRE (Họ Vingroup)",
+                "Tiến độ pháp lý mở bán các đại dự án, doanh số bán lẻ tại các TTTM và kế hoạch huy động vốn tác động trực tiếp đến dòng tiền và định giá cổ phiếu.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "VHM", "Bất Động Sản"]
+            ),
+            (
+                ["vietcombank", "bidv", "vietinbank", "vcb", "bid", "ctg"],
+                "VCB, BID, CTG (Big 4 Ngân hàng)",
+                "Dẫn dắt thanh khoản toàn hệ thống; chính sách điều hành lãi suất của NHNN, biên lãi ròng (NIM) và trích lập dự phòng nợ xấu tác động trực tiếp đến lợi nhuận.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "Ngân Hàng", "VN30"]
+            ),
+            (
+                ["techcombank", "mbb", "quân đội", "acb", "vpb", "vpbank", "tcb", "ngân hàng tmcp"],
+                "TCB, MBB, ACB, VPB (Ngân hàng TMCP)",
+                "Nhạy cảm với hạn mức room tín dụng, chi phí vốn huy động tiền gửi và triển vọng hồi phục của thị trường trái phiếu doanh nghiệp.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "Ngân Hàng", "VN30"]
+            ),
+            (
+                ["pv gas", "petrolimex", "pv power", "gas", "plx", "pow", "khí lng", "dầu brent"],
+                "GAS, PLX, POW (Năng lượng & Dầu khí)",
+                "Biến động giá dầu thô thế giới và nhu cầu tiêu thụ khí/điện tác động trực tiếp đến giá bán buôn, chi phí sản xuất điện và biên phân phối xăng dầu.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "Dầu Khí", "Năng Lượng"]
+            ),
+            (
+                ["thế giới di động", "mwg", "masan", "msn", "vinamilk", "vnm", "sabeco", "sab"],
+                "MWG, MSN, VNM, SAB (Tiêu dùng & Bán lẻ)",
+                "Sức mua của người tiêu dùng nội địa, xu hướng chi tiêu bán lẻ và giá nguyên vật liệu đầu vào chi phối trực tiếp kết quả kinh doanh quý.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "Bán Lẻ", "Tiêu Dùng"]
+            ),
+            (
+                ["ssi", "chứng khoán ssi", "công ty chứng khoán", "dư nợ margin", "thanh khoản thị trường"],
+                "SSI (Chứng khoán SSI)",
+                "Thanh khoản giao dịch toàn thị trường và nhu cầu vay ký quỹ (margin) của nhà đầu tư quyết định trực tiếp doanh thu môi giới và cho vay.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "SSI", "Chứng Khoán"]
+            ),
+            (
+                ["vietjet", "vjc", "vé máy bay", "hàng không", "nhiên liệu bay"],
+                "VJC (Vietjet Air)",
+                "Lượng khách du lịch phục hồi và biến động giá nhiên liệu bay Jet A-1 là hai biến số cốt lõi chi phối biên lợi nhuận của doanh nghiệp hàng không.",
+                "Trực tiếp",
+                ["Cổ Phiếu", "VJC", "Hàng Không"]
+            )
+        ]
+
+        for keywords, stock_label, reason, degree, tags in stock_rules:
+            if any(w in text for w in keywords):
+                return {
+                    "affected_stocks": stock_label,
+                    "impact_reason": reason,
+                    "impact_degree": degree,
+                    "is_direct_stock_impact": True,
+                    "asset_category": "stocks",
+                    "asset_tags": tags,
+                    "impact_asset": stock_label,
+                    "sentiment_override": None
+                }
+
+        # 2. Quét theo ngành kinh tế vĩ mô nếu không nhắc mã riêng lẻ
+        if any(w in text for w in ["ngân hàng", "tín dụng", "nợ xấu", "casa", "lãi suất tiền gửi", "lãi suất cho vay", "room tín dụng", "thanh khoản liên ngân hàng"]):
+            return {
+                "affected_stocks": "VCB, BID, CTG, TCB, MBB, VPB (Nhóm Ngân hàng)",
+                "impact_reason": "Nhóm Ngân hàng chiếm vốn hóa lớn nhất VN-Index (~35-40%); chính sách tín dụng và biến động mặt bằng lãi suất chi phối trực tiếp định giá của nhóm.",
+                "impact_degree": "Ngành trọng điểm",
+                "is_direct_stock_impact": True,
+                "asset_category": "stocks",
+                "asset_tags": ["Ngân Hàng", "Tín Dụng", "VN30"],
+                "impact_asset": "Cổ Phiếu Ngân Hàng",
+                "sentiment_override": None
+            }
+
+        if any(w in text for w in ["bất động sản", "nhà ở", "luật đất đai", "thị trường bđs", "chung cư", "đấu giá đất", "pháp lý dự án"]):
+            return {
+                "affected_stocks": "VHM, VIC, VRE, BCM, KDH (Nhóm Bất động sản)",
+                "impact_reason": "Tháo gỡ pháp lý và nới lỏng tiếp cận vốn tín dụng giúp cải thiện dòng tiền bán hàng và tái khởi động các dự án lớn.",
+                "impact_degree": "Ngành trọng điểm",
+                "is_direct_stock_impact": True,
+                "asset_category": "stocks",
+                "asset_tags": ["Bất Động Sản", "VHM", "VN30"],
+                "impact_asset": "Cổ Phiếu Bất Động Sản",
+                "sentiment_override": None
+            }
+
+        if any(w in text for w in ["nâng hạng", "ftse", "msci", "pre-funding", "non-margin", "dòng vốn ngoại", "khối ngoại"]):
+            return {
+                "affected_stocks": "Toàn rổ VN30 (Đặc biệt SSI, HPG, VHM, FPT, VCB)",
+                "impact_reason": "Triển vọng nâng hạng thị trường giúp thu hút dòng vốn ngoại quy mô tỷ USD giải ngân tập trung vào các cổ phiếu vốn hóa lớn VN30.",
+                "impact_degree": "Toàn thị trường",
+                "is_direct_stock_impact": True,
+                "asset_category": "stocks",
+                "asset_tags": ["Nâng Hạng", "Khối Ngoại", "VN30"],
+                "impact_asset": "Cổ Phiếu VN30",
+                "sentiment_override": ("positive", "Tích Cực Mạnh", "emerald", "low")
+            }
+
+        if any(w in text for w in ["fed", "lãi suất", "tỷ giá", "usd", "dxy", "lạm phát", "cpi", "gdp", "ngân hàng nhà nước", "nhnn", "tín phiếu"]):
+            return {
+                "affected_stocks": "Toàn rổ VN30 (Nhạy cảm nhất: Ngân hàng & Nhóm nợ USD)",
+                "impact_reason": "Biến động tỷ giá USD/VND và định hướng lãi suất ảnh hưởng tới dòng vốn ngoại cũng như chi phí tài chính của toàn bộ doanh nghiệp niêm yết.",
+                "impact_degree": "Vĩ mô diện rộng",
+                "is_direct_stock_impact": True,
+                "asset_category": "macro",
+                "asset_tags": ["Vĩ Mô", "Tỷ Giá", "Lãi Suất"],
+                "impact_asset": "Kinh Tế Vĩ Mô & Tỷ Giá",
+                "sentiment_override": None
+            }
 
         if any(w in text for w in ["vàng", "sjc", "spot gold", "xau", "nhẫn 9999", "kim loại quý"]):
-            asset_category = "gold"
-            asset_tags = ["Giá Vàng", "Vàng SJC", "Kim Loại Quý"]
-            impact_asset = "Giá Vàng (SJC & Thế Giới)"
-        elif any(w in text for w in ["bitcoin", "btc", "crypto", "tiền số", "tiền điện tử", "ethereum", "eth"]):
-            asset_category = "btc"
-            asset_tags = ["Bitcoin", "BTC", "Crypto"]
-            impact_asset = "Bitcoin & Tiền Số"
-        elif any(w in text for w in ["chiến sự", "trung đông", "iran", "israel", "nga", "ukraine", "biển đỏ", "quân sự", "tấn công", "trừng phạt", "bầu cử"]):
-            asset_category = "politics"
-            asset_tags = ["Chính Trị", "Địa Chính Trị", "Chiến Sự"]
-            impact_asset = "Địa Chính Trị & Dầu Khí"
-        elif any(w in text for w in ["fed", "lãi suất", "tỷ giá", "usd", "dxy", "lạm phát", "cpi", "gdp", "ngân hàng nhà nước", "nhnn", "tín phiếu", "trái phiếu"]):
-            asset_category = "macro"
-            asset_tags = ["Vĩ Mô", "Tỷ Giá", "Lãi Suất"]
-            impact_asset = "Kinh Tế Vĩ Mô & Tỷ Giá"
+            return {
+                "affected_stocks": "Tài sản Trú ẩn & Cổ phiếu Vàng bạc (PNJ)",
+                "impact_reason": "Vàng tăng nóng có thể hút một phần dòng tiền nhàn rỗi khỏi kênh chứng khoán; khi vàng bình ổn, dòng tiền có xu hướng quay lại thị trường cổ phiếu.",
+                "impact_degree": "Gián tiếp dòng tiền",
+                "is_direct_stock_impact": False,
+                "asset_category": "gold",
+                "asset_tags": ["Giá Vàng", "Vàng SJC", "Kim Loại Quý"],
+                "impact_asset": "Giá Vàng (SJC & Thế Giới)",
+                "sentiment_override": None
+            }
 
-        # 2. Đánh giá sắc thái (Sentiment)
-        pos_words = ["tăng", "lãi", "vượt đỉnh", "khởi sắc", "bứt phá", "hút", "mua ròng", "lạc quan", "phục hồi", "kỷ lục", "đột biến", "thặng dư", "tích cực", "nâng hạng", "hỗ trợ"]
-        neg_words = ["giảm", "lỗ", "phạt", "rủi ro", "lao dốc", "bán tháo", "áp lực", "suy thoái", "thủng", "trừng phạt", "chiến sự", "cháy", "thiệt mạng", "bán ròng", "tiêu cực", "cảnh báo"]
+        if any(w in text for w in ["bitcoin", "btc", "crypto", "tiền số", "tiền điện tử"]):
+            return {
+                "affected_stocks": "Tài sản Số (Crypto & Khẩu vị Rủi ro)",
+                "impact_reason": "Phản ánh tâm lý đầu cơ toàn cầu; biến động giá Bitcoin ít tác động trực tiếp đến kết quả sản xuất kinh doanh của rổ cổ phiếu VN30.",
+                "impact_degree": "Tâm lý đầu cơ",
+                "is_direct_stock_impact": False,
+                "asset_category": "btc",
+                "asset_tags": ["Bitcoin", "BTC", "Crypto"],
+                "impact_asset": "Bitcoin & Tiền Số",
+                "sentiment_override": None
+            }
 
-        pos_count = sum(1 for w in pos_words if w in text)
-        neg_count = sum(1 for w in neg_words if w in text)
+        if any(w in text for w in ["chiến sự", "trung đông", "iran", "israel", "nga", "ukraine", "biển đỏ", "quân sự", "tấn công", "trừng phạt", "giá dầu"]):
+            return {
+                "affected_stocks": "Nhóm Dầu khí (GAS, PLX) & Xuất nhập khẩu",
+                "impact_reason": "Căng thẳng địa chính trị đẩy giá dầu và cước tàu biển lên cao; nhóm dầu khí hưởng lợi ngắn hạn trong khi các ngành sản xuất chịu chi phí logistics tăng.",
+                "impact_degree": "Ngành dầu khí & logistics",
+                "is_direct_stock_impact": True,
+                "asset_category": "politics",
+                "asset_tags": ["Chính Trị", "Địa Chính Trị", "Dầu Khí"],
+                "impact_asset": "Địa Chính Trị & Dầu Khí",
+                "sentiment_override": None
+            }
 
-        if pos_count > neg_count and pos_count >= 1:
-            sentiment = "positive"
-            sentiment_label = "Tích Cực"
-            badge_color = "emerald"
-            risk_level = "low"
-        elif neg_count > pos_count and neg_count >= 1:
-            sentiment = "negative"
-            sentiment_label = "Rủi Ro / Tiêu Cực"
-            badge_color = "rose"
-            risk_level = "high"
-        else:
-            sentiment = "neutral"
-            sentiment_label = "Trung Tính / Giằng Co"
-            badge_color = "cyan"
-            risk_level = "medium"
+        # Mặc định: Tin kinh tế vĩ mô chung
+        return {
+            "affected_stocks": "Tâm lý chung thị trường VN30",
+            "impact_reason": "Cung cấp thêm dữ liệu môi trường vĩ mô và sức cầu nội địa, tác động gián tiếp đến kỳ vọng tăng trưởng của thị trường.",
+            "impact_degree": "Gián tiếp",
+            "is_direct_stock_impact": False,
+            "asset_category": "stocks",
+            "asset_tags": ["Thị Trường", "VN30"],
+            "impact_asset": "Cổ Phiếu VN30",
+            "sentiment_override": None
+        }
 
-        # 3. Phân vùng trong nước / quốc tế
-        region = item["region"]
+    def _classify_article(self, item: Dict) -> Dict:
+        """Tự động phân loại tài sản, tag, đánh giá sắc thái và phân tích tác động cổ phiếu chuyên sâu."""
+        text = (item["title"] + " " + item["summary"]).lower()
+
+        # 1. Phân vùng trong nước / quốc tế
+        region = item.get("region", "domestic")
         if any(w in text for w in ["việt nam", "trong nước", "hà nội", "tp.hcm", "hose", "hnx", "nhnn", "ubck"]):
             region = "domestic"
         elif any(w in text for w in ["mỹ", "trung quốc", "châu âu", "fed", "wall street", "thế giới", "quốc tế", "nga", "iran"]):
             region = "international"
-
         region_label = "Trong Nước" if region == "domestic" else "Quốc Tế"
+
+        # 2. Phân tích tác động cổ phiếu & cơ chế tại sao
+        impact_info = self._analyze_impact(text, item["title"], item["summary"], region)
+
+        # 3. Đánh giá sắc thái (Sentiment)
+        if impact_info.get("sentiment_override"):
+            sentiment, sentiment_label, badge_color, risk_level = impact_info["sentiment_override"]
+        else:
+            pos_words = ["tăng", "lãi", "vượt đỉnh", "khởi sắc", "bứt phá", "hút", "mua ròng", "lạc quan", "phục hồi", "kỷ lục", "đột biến", "thặng dư", "tích cực", "nâng hạng", "hỗ trợ"]
+            neg_words = ["giảm", "lỗ", "phạt", "rủi ro", "lao dốc", "bán tháo", "áp lực", "suy thoái", "thủng", "trừng phạt", "bán ròng", "tiêu cực", "cảnh báo"]
+
+            pos_count = sum(1 for w in pos_words if w in text)
+            neg_count = sum(1 for w in neg_words if w in text)
+
+            if pos_count > neg_count and pos_count >= 1:
+                sentiment = "positive"
+                sentiment_label = "Tích Cực"
+                badge_color = "emerald"
+                risk_level = "low"
+            elif neg_count > pos_count and neg_count >= 1:
+                sentiment = "negative"
+                sentiment_label = "Rủi Ro / Tiêu Cực"
+                badge_color = "rose"
+                risk_level = "high"
+            else:
+                sentiment = "neutral"
+                sentiment_label = "Trung Tính / Giằng Co"
+                badge_color = "cyan"
+                risk_level = "medium"
 
         return {
             "title": item["title"],
@@ -164,9 +358,13 @@ class NewsService:
             "source": item["source"],
             "region": region,
             "region_label": region_label,
-            "asset_category": asset_category,
-            "asset_tags": asset_tags,
-            "impact_asset": impact_asset,
+            "asset_category": impact_info["asset_category"],
+            "asset_tags": impact_info["asset_tags"],
+            "impact_asset": impact_info["impact_asset"],
+            "affected_stocks": impact_info["affected_stocks"],
+            "impact_reason": impact_info["impact_reason"],
+            "impact_degree": impact_info["impact_degree"],
+            "is_direct_stock_impact": impact_info["is_direct_stock_impact"],
             "sentiment": sentiment,
             "sentiment_label": sentiment_label,
             "risk_level": risk_level,
@@ -186,8 +384,12 @@ class NewsService:
                 "region": "domestic",
                 "region_label": "Trong Nước",
                 "asset_category": "macro",
-                "asset_tags": ["Tỷ Giá", "Vĩ Mô", "Cổ Phiếu"],
-                "impact_asset": "Cổ phiếu & Lãi suất",
+                "asset_tags": ["Tỷ Giá", "Vĩ Mô", "Ngân Hàng"],
+                "impact_asset": "Kinh Tế Vĩ Mô & Tỷ Giá",
+                "affected_stocks": "VCB, BID, CTG, TCB, MBB (Nhóm Ngân hàng & Tỷ giá)",
+                "impact_reason": "Động thái điều tiết cung tiền ngắn hạn nhằm kìm cương đà tăng của tỷ giá USD/VND; giúp bảo vệ ổn định vĩ mô nhưng thanh khoản liên ngân hàng có thể thận trọng.",
+                "impact_degree": "Vĩ mô diện rộng",
+                "is_direct_stock_impact": True,
                 "sentiment": "neutral",
                 "sentiment_label": "Trung Tính / Thận Trọng",
                 "risk_level": "medium",
@@ -204,6 +406,10 @@ class NewsService:
                 "asset_category": "stocks",
                 "asset_tags": ["Cổ Phiếu", "VN30", "FTSE"],
                 "impact_asset": "Cổ Phiếu VN30",
+                "affected_stocks": "Toàn rổ VN30 (Đặc biệt SSI, HPG, VHM, FPT, VCB)",
+                "impact_reason": "Tháo gỡ tiêu chí Non-margin của tổ chức FTSE Russell mở đường đón dòng vốn ngoại thụ động (ETF) quy mô hàng tỷ USD giải ngân tập trung vào các mã trụ.",
+                "impact_degree": "Toàn thị trường",
+                "is_direct_stock_impact": True,
                 "sentiment": "positive",
                 "sentiment_label": "Tích Cực Mạnh",
                 "risk_level": "low",
@@ -219,7 +425,11 @@ class NewsService:
                 "region_label": "Quốc Tế",
                 "asset_category": "politics",
                 "asset_tags": ["Chính Trị", "Địa Chính Trị", "Dầu Thô"],
-                "impact_asset": "Dầu Khí & Lạm Phát",
+                "impact_asset": "Địa Chính Trị & Dầu Khí",
+                "affected_stocks": "GAS (PV Gas), PLX (Petrolimex), POW",
+                "impact_reason": "Giá dầu duy trì vùng cao giúp cải thiện biên phân phối và lợi nhuận bán buôn dầu khí; tuy nhiên cước tàu tăng gia tăng áp lực chi phí nguyên liệu đầu vào.",
+                "impact_degree": "Ngành dầu khí",
+                "is_direct_stock_impact": True,
                 "sentiment": "negative",
                 "sentiment_label": "Rủi Ro Địa Chính Trị",
                 "risk_level": "high",
@@ -235,10 +445,14 @@ class NewsService:
                 "region_label": "Trong Nước",
                 "asset_category": "gold",
                 "asset_tags": ["Vàng SJC", "Vàng Nhẫn", "Chính Sách"],
-                "impact_asset": "Giá Vàng Nội Địa",
-                "sentiment": "negative",
-                "sentiment_label": "Biến Động Rủi Ro",
-                "risk_level": "high",
+                "impact_asset": "Giá Vàng (SJC & Thế Giới)",
+                "affected_stocks": "Tài sản Trú ẩn & Doanh nghiệp Vàng (PNJ)",
+                "impact_reason": "Siết chặt thanh tra giúp thu hẹp chênh lệch giá vàng, giảm tình trạng đầu cơ vàng miếng và kích thích dòng tiền nhàn rỗi dịch chuyển sang chứng khoán.",
+                "impact_degree": "Gián tiếp dòng tiền",
+                "is_direct_stock_impact": False,
+                "sentiment": "neutral",
+                "sentiment_label": "Thanh Tra / Bình Ổn",
+                "risk_level": "medium",
                 "badge_color": "amber"
             },
             {
@@ -251,7 +465,11 @@ class NewsService:
                 "region_label": "Quốc Tế",
                 "asset_category": "btc",
                 "asset_tags": ["Bitcoin", "BTC", "ETF Crypto"],
-                "impact_asset": "Bitcoin & Crypto",
+                "impact_asset": "Bitcoin & Tiền Số",
+                "affected_stocks": "Tài sản Số (Khẩu vị Rủi ro Toàn cầu)",
+                "impact_reason": "Dòng vốn tổ chức vào ETF phản ánh khẩu vị rủi ro quốc tế ổn định, ít có tác động trực tiếp đến định giá sản xuất kinh doanh của rổ cổ phiếu VN30.",
+                "impact_degree": "Tâm lý đầu cơ",
+                "is_direct_stock_impact": False,
                 "sentiment": "positive",
                 "sentiment_label": "Tích Cực Trung Hạn",
                 "risk_level": "medium",
@@ -267,7 +485,11 @@ class NewsService:
                 "region_label": "Quốc Tế",
                 "asset_category": "macro",
                 "asset_tags": ["FED", "Lãi Suất", "Lạm Phát CPI"],
-                "impact_asset": "Chứng Khoán Toàn Cầu & Tỷ Giá",
+                "impact_asset": "Kinh Tế Vĩ Mô & Tỷ Giá",
+                "affected_stocks": "Toàn rổ VN30 (Tâm lý NĐT Toàn cầu)",
+                "impact_reason": "Định hướng lãi suất của FED tác động trực tiếp tới chỉ số sức mạnh đồng USD (DXY), chênh lệch lãi suất USD/VND và dòng vốn đầu tư gián tiếp.",
+                "impact_degree": "Vĩ mô diện rộng",
+                "is_direct_stock_impact": True,
                 "sentiment": "neutral",
                 "sentiment_label": "Giằng Co / Chờ Đợi",
                 "risk_level": "medium",

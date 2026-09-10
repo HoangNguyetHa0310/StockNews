@@ -206,6 +206,39 @@
           </div>
         </div>
 
+        <!-- Khối Phân Tích Cổ Phiếu Ảnh Hưởng & Lý Do Chi Tiết (Theo yêu cầu) -->
+        <div 
+          v-if="item.affected_stocks || item.impact_reason" 
+          class="p-3 rounded-xl bg-theme-subtle/80 border border-theme-border text-xs space-y-1.5 transition-colors shadow-inner"
+        >
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <div class="flex items-center gap-1.5 font-semibold text-theme-text min-w-0">
+              <Target class="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+              <span class="text-theme-sub text-[11px] whitespace-nowrap">Ảnh hưởng:</span>
+              <span 
+                class="font-mono px-2 py-0.5 rounded-md text-[11px] font-bold truncate"
+                :class="item.is_direct_stock_impact ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30' : 'bg-theme-card text-theme-sub border border-theme-border'"
+              >
+                {{ item.affected_stocks }}
+              </span>
+            </div>
+
+            <!-- Mức độ tác động -->
+            <span 
+              v-if="item.impact_degree"
+              class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0"
+              :class="getImpactDegreeClass(item.impact_degree, item.is_direct_stock_impact)"
+            >
+              {{ item.impact_degree }}
+            </span>
+          </div>
+
+          <!-- Giải thích tại sao lại ảnh hưởng -->
+          <p class="text-[11px] text-theme-sub leading-relaxed pt-0.5">
+            <strong class="text-theme-text font-medium">Tại sao ảnh hưởng:</strong> {{ item.impact_reason }}
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -213,7 +246,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Clock, Search, ExternalLink, MapPin, Globe } from 'lucide-vue-next'
+import { Clock, Search, ExternalLink, MapPin, Globe, Target } from 'lucide-vue-next'
 import { fetchNewsFeed } from '../api'
 
 const newsList = ref([])
@@ -268,6 +301,22 @@ const filteredNews = computed(() => {
 function getSentimentClass(sentiment) {
   if (sentiment === 'positive') return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
   if (sentiment === 'negative') return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+  return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+}
+
+function getImpactDegreeClass(degree, isDirect) {
+  if (!isDirect || degree === 'Không ảnh hưởng') {
+    return 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/20'
+  }
+  if (degree === 'Trực tiếp') {
+    return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+  }
+  if (degree === 'Ngành trọng điểm') {
+    return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'
+  }
+  if (degree === 'Toàn thị trường') {
+    return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30'
+  }
   return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
 }
 
