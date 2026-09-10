@@ -1,6 +1,6 @@
 <template>
   <aside 
-    class="bg-theme-card border-r border-theme-border flex flex-col justify-between transition-all duration-300 z-30 shrink-0 select-none shadow-sm text-theme-text"
+    class="hidden md:flex bg-theme-card border-r border-theme-border flex-col justify-between transition-all duration-300 z-30 shrink-0 select-none shadow-sm text-theme-text"
     :class="isCollapsed ? 'w-20' : 'w-64'"
   >
     <!-- Top: Logo & Collapse Button -->

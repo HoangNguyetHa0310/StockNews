@@ -1,44 +1,44 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
     @click.self="$emit('close')"
   >
     <div 
-      class="bg-theme-card border border-theme-border rounded-3xl w-full max-w-6xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
+      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-6xl max-h-[94vh] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
     >
       <!-- Modal Header -->
-      <div class="px-6 py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
-            <PieChart class="w-5 h-5 text-slate-950 stroke-[2.5]" />
+      <div class="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
+            <PieChart class="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 stroke-[2.5]" />
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                Báo Cáo Phân Bổ Khuyến Nghị & Lý Do Thị Trường VN30
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <h2 class="text-sm sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight truncate">
+                Báo Cáo Phân Bổ VN30
               </h2>
               <span class="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30">
-                AI & QUANT INSIGHTS
+                AI & QUANT
               </span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Phân bổ tỷ lệ % danh mục rổ VN30 và giải trình chi tiết lý do từng cổ phiếu nên Mua, Bán hay Nắm giữ.
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+              Phân bổ danh mục rổ VN30 và giải trình chi tiết lý do từng cổ phiếu
             </p>
           </div>
         </div>
 
         <button 
           @click="$emit('close')" 
-          class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          class="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
           title="Đóng cửa sổ (Esc)"
         >
-          <X class="w-5 h-5" />
+          <X class="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       <!-- Modal Body (Scrollable) -->
-      <div class="p-6 overflow-y-auto space-y-6 flex-1 text-theme-text">
+      <div class="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 text-theme-text">
         
         <!-- Loading State -->
         <div v-if="isLoading" class="py-20 text-center space-y-3">

@@ -1,23 +1,23 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-theme-backdrop backdrop-blur-md animate-fade-in"
+    class="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-theme-backdrop backdrop-blur-md animate-fade-in"
     @click.self="$emit('close')"
   >
-    <div class="relative w-full max-w-5xl max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200">
+    <div class="relative w-full max-w-5xl max-h-[94vh] sm:max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200">
       
       <!-- Modal Header -->
-      <div class="p-6 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 font-bold font-mono text-xl">
+      <div class="p-4 sm:p-6 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
+        <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 font-bold font-mono text-base sm:text-xl shrink-0">
             {{ stock?.ticker }}
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white font-mono">{{ stock?.ticker }}</h3>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-mono">{{ stock?.ticker }}</h3>
               <span v-html="getSignalBadge(stock?.signal)"></span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
               Giá: <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(stock?.close) }}</span>
               <span :class="stock?.change_pct >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'" class="ml-1 font-semibold">
                 ({{ stock?.change_pct >= 0 ? '+' : '' }}{{ stock?.change_pct?.toFixed(2) }}%)
@@ -29,93 +29,93 @@
 
         <button 
           @click="$emit('close')" 
-          class="w-9 h-9 rounded-xl bg-theme-subtle hover:bg-theme-subtle-2 text-theme-muted hover:text-theme-text flex items-center justify-center transition border border-theme-border shadow-sm"
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-theme-subtle hover:bg-theme-subtle-2 text-theme-muted hover:text-theme-text flex items-center justify-center transition border border-theme-border shadow-sm shrink-0"
         >
-          <X class="w-5 h-5" />
+          <X class="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       <!-- Modal Body (Scrollable) -->
-      <div class="p-6 overflow-y-auto space-y-6 flex-1 text-theme-text">
+      <div class="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 text-theme-text">
 
         <!-- 4 Score Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="p-3.5 rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[11px] text-theme-sub font-medium">Xu Hướng (Trend)</span>
-            <div class="text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.trend_score }} / 100</div>
-            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-2 overflow-hidden">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Xu Hướng (Trend)</span>
+            <div class="text-base sm:text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.trend_score }} / 100</div>
+            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
               <div class="bg-cyan-500 h-full" :style="{ width: stock?.trend_score + '%' }"></div>
             </div>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[11px] text-theme-sub font-medium">Động Lượng (Momentum)</span>
-            <div class="text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.momentum_score }} / 100</div>
-            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Động Lượng (Momentum)</span>
+            <div class="text-base sm:text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.momentum_score }} / 100</div>
+            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
               <div class="bg-emerald-500 h-full" :style="{ width: stock?.momentum_score + '%' }"></div>
             </div>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[11px] text-theme-sub font-medium">Dòng Tiền (Money Flow)</span>
-            <div class="text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.flow_score }} / 100</div>
-            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Dòng Tiền (Money Flow)</span>
+            <div class="text-base sm:text-lg font-bold font-mono text-theme-text mt-0.5">{{ stock?.flow_score }} / 100</div>
+            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
               <div class="bg-amber-500 h-full" :style="{ width: stock?.flow_score + '%' }"></div>
             </div>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-theme-subtle border border-theme-border">
-            <span class="text-[11px] text-theme-sub font-medium">Xác Suất Tăng AI (T+3)</span>
-            <div class="text-lg font-bold font-mono text-cyan-600 dark:text-cyan-300 mt-0.5">{{ stock?.ml_prob_up }}%</div>
-            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border">
+            <span class="text-[10px] sm:text-[11px] text-theme-sub font-medium">Xác Suất Tăng AI (T+3)</span>
+            <div class="text-base sm:text-lg font-bold font-mono text-cyan-600 dark:text-cyan-300 mt-0.5">{{ stock?.ml_prob_up }}%</div>
+            <div class="w-full bg-theme-subtle-2 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
               <div class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full" :style="{ width: stock?.ml_prob_up + '%' }"></div>
             </div>
           </div>
         </div>
 
         <!-- Strategy Levels Banner -->
-        <div class="p-4 rounded-2xl bg-theme-subtle border border-theme-border flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
-          <div class="flex items-center gap-2">
+        <div class="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-between gap-2.5 sm:gap-4 font-mono text-[11px] sm:text-xs">
+          <div class="flex items-center gap-1.5 sm:gap-2">
             <span class="text-theme-sub">Vùng Mua:</span>
-            <span class="px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 font-bold border border-cyan-500/20">
+            <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 font-bold border border-cyan-500/20">
               {{ stock?.entry_range || '--' }}
             </span>
           </div>
 
-          <div class="flex items-center gap-2">
-            <span class="text-theme-sub">Cắt Lỗ (Stoploss):</span>
-            <span class="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/20">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-theme-sub">Cắt Lỗ:</span>
+            <span class="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/20">
               {{ formatPrice(stock?.stoploss) }}
             </span>
           </div>
 
-          <div class="flex items-center gap-2">
-            <span class="text-theme-sub">Mục Tiêu 1 (Target):</span>
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-theme-sub">Mục Tiêu:</span>
+            <span class="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
               {{ formatPrice(stock?.target_1) }}
             </span>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2">
             <span class="text-theme-sub">Tỷ Lệ R/R:</span>
             <span class="font-bold text-theme-text">{{ stock?.risk_reward_ratio }} : 1</span>
           </div>
         </div>
 
         <!-- TradingView Candlestick Chart Container -->
-        <div class="bg-theme-subtle p-4 rounded-2xl border border-theme-border space-y-2">
+        <div class="bg-theme-subtle p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-theme-border space-y-2">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-theme-text uppercase tracking-wider flex items-center gap-2">
-              <Activity class="w-4 h-4 text-cyan-500" />
-              Biểu Đồ Nến Nhật & Khối Lượng (TradingView Engine)
+            <h4 class="text-[11px] sm:text-xs font-bold text-theme-text uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
+              <Activity class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-500" />
+              <span>Biểu Đồ Nến Nhật & Khối Lượng</span>
             </h4>
-            <span v-if="isLoadingCandles" class="text-xs text-theme-muted font-mono animate-pulse">
-              Đang tải dữ liệu nến...
+            <span v-if="isLoadingCandles" class="text-[10px] sm:text-xs text-theme-muted font-mono animate-pulse">
+              Đang tải nến...
             </span>
           </div>
 
           <!-- Chart Div -->
-          <div ref="chartContainer" class="w-full h-80 rounded-xl overflow-hidden"></div>
+          <div ref="chartContainer" class="w-full h-64 sm:h-80 rounded-xl overflow-hidden"></div>
         </div>
 
       </div>

@@ -110,3 +110,14 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
+
+/* Mobile Touch & Safe Area */
+.overflow-x-auto, .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  nav.fixed.bottom-0 {
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+}

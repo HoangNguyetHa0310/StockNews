@@ -1,34 +1,34 @@
 <template>
   <section class="space-y-4">
     <!-- Toolbar: Filter Tabs & Search Bar -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-theme-card p-4 rounded-2xl border border-theme-border shadow-sm transition-colors duration-200">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-theme-card p-3 sm:p-4 rounded-2xl border border-theme-border shadow-sm transition-colors duration-200">
       
       <!-- Filter Tabs -->
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-1.5 sm:gap-2">
         <button 
           @click="setFilter('ALL')" 
-          class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition"
+          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition"
           :class="activeFilter === 'ALL' ? 'bg-cyan-500 text-slate-950 shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
           Tất cả ({{ stocks.length }})
         </button>
         <button 
           @click="setFilter('BUY')" 
-          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition"
+          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
           :class="activeFilter === 'BUY' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Tín hiệu MUA / MUA MẠNH
+          Tín hiệu MUA
         </button>
         <button 
           @click="setFilter('HOLD')" 
-          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition"
+          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
           :class="activeFilter === 'HOLD' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Nắm giữ / Theo dõi
+          Nắm giữ / Chờ
         </button>
         <button 
           @click="setFilter('SELL')" 
-          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition"
+          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
           :class="activeFilter === 'SELL' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
           Cảnh báo BÁN
@@ -41,7 +41,7 @@
         <input 
           v-model="searchQuery" 
           type="text" 
-          placeholder="Tìm theo mã (ví dụ: FPT, HPG)..." 
+          placeholder="Tìm theo mã (FPT, HPG)..." 
           class="w-full pl-9 pr-4 py-2 bg-theme-subtle border border-theme-border rounded-xl text-xs text-theme-text placeholder-theme-muted focus:outline-none focus:border-cyan-500 transition font-mono shadow-inner"
         />
       </div>
@@ -49,22 +49,28 @@
 
     <!-- Leaderboard Table Card -->
     <div class="bg-theme-card rounded-2xl border border-theme-border shadow-sm overflow-hidden backdrop-blur-sm transition-colors duration-200">
-      <div class="p-5 border-b border-theme-border flex justify-between items-center">
+      <div class="p-3.5 sm:p-5 border-b border-theme-border flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
         <div>
-          <h2 class="text-base font-bold text-theme-text flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-bold text-theme-text flex items-center gap-2">
             BẢNG XẾP HẠNG 30 CỔ PHIẾU VN30
           </h2>
-          <p class="text-xs text-theme-sub mt-0.5">
+          <p class="text-[11px] sm:text-xs text-theme-sub mt-0.5">
             Sắp xếp theo Điểm Định Lượng Đa Nhân Tố & Xác suất Tăng Học Máy (LightGBM)
           </p>
         </div>
-        <div class="text-xs font-mono text-theme-sub">
+        <div class="text-[11px] sm:text-xs font-mono text-theme-sub">
           Hiển thị: <span class="text-theme-text font-bold">{{ filteredStocks.length }}</span> mã
         </div>
       </div>
 
+      <!-- Mobile Scroll Hint -->
+      <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
+        <ArrowLeftRight class="w-3.5 h-3.5 shrink-0" />
+        <span>Vuốt ngang bảng để xem đầy đủ 13 cột chỉ số kỹ thuật & mở biểu đồ</span>
+      </div>
+
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
+        <table class="w-full text-left text-xs min-w-[980px]">
           <thead class="bg-theme-subtle/80 text-theme-sub font-semibold border-b border-theme-border text-[11px] uppercase tracking-wider select-none">
             <tr>
               <th class="py-3.5 px-3 text-center w-12 text-theme-muted">Hạng</th>
@@ -353,7 +359,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Search, CandlestickChart, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next'
+import { Search, CandlestickChart, ArrowUp, ArrowDown, ArrowUpDown, ArrowLeftRight } from 'lucide-vue-next'
 
 const props = defineProps({
   stocks: {

@@ -17,13 +17,13 @@
         :refresh-interval="refreshInterval"
       />
 
-      <!-- Main Content Area: Rộng rãi, thoáng đạt -->
-      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->
+      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-24 md:pb-8 space-y-4 sm:space-y-8">
         
         <!-- API Offline Warning Alert (If Backend Not Running) -->
         <div 
           v-if="isApiOffline" 
-          class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 text-xs flex items-center justify-between shadow-sm"
+          class="p-3.5 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-300 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
         >
           <div class="flex items-center gap-2">
             <AlertCircle class="w-4 h-4 text-rose-500 shrink-0" />
@@ -125,10 +125,49 @@
       />
 
       <!-- Footer -->
-      <footer class="border-t border-theme-border py-6 text-center text-xs text-theme-text-muted font-mono mt-8 transition-colors duration-200">
+      <footer class="border-t border-theme-border py-6 text-center text-xs text-theme-text-muted font-mono mt-8 mb-14 md:mb-0 transition-colors duration-200">
         <p>VN30 Quantitative & AI Intelligence Platform &bull; FastAPI + Vue 3 Architecture</p>
         <p class="mt-1 text-[11px]">Dữ liệu nguồn từ Vnstock API &bull; Chu kỳ làm mới ngầm: {{ refreshInterval }}s (Cấu hình tại config.py)</p>
       </footer>
+
+      <!-- Mobile Bottom Navigation Bar (Thanh điều hướng cố định dưới đáy màn hình điện thoại) -->
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-theme-card/95 backdrop-blur-lg border-t border-theme-border flex items-center justify-around py-2 px-3 shadow-lg select-none">
+        <!-- Tab 1: Thị Trường VN30 -->
+        <button 
+          @click="handleSelectTab('dashboard')"
+          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+          :class="currentTab === 'dashboard' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+        >
+          <LayoutDashboard class="w-5 h-5" />
+          <span class="text-[11px] tracking-tight">Thị Trường</span>
+          <span v-if="currentTab === 'dashboard'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+        </button>
+
+        <!-- Tab 2: Tin Tức Thị Trường -->
+        <button 
+          @click="handleSelectTab('news')"
+          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+          :class="currentTab === 'news' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+        >
+          <div class="relative">
+            <Newspaper class="w-5 h-5" />
+            <span class="w-2 h-2 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5"></span>
+          </div>
+          <span class="text-[11px] tracking-tight">Tin Tức</span>
+          <span v-if="currentTab === 'news'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+        </button>
+
+        <!-- Tab 3: Đánh Giá Rủi Ro -->
+        <button 
+          @click="handleSelectTab('risk')"
+          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+          :class="currentTab === 'risk' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+        >
+          <ShieldAlert class="w-5 h-5" />
+          <span class="text-[11px] tracking-tight">Rủi Ro AI</span>
+          <span v-if="currentTab === 'risk'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+        </button>
+      </nav>
 
     </div>
   </div>
@@ -136,7 +175,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { AlertCircle, Cpu, Sliders, ShieldAlert } from 'lucide-vue-next'
+import { AlertCircle, Cpu, Sliders, ShieldAlert, LayoutDashboard, Newspaper } from 'lucide-vue-next'
 import Sidebar from './components/Sidebar.vue'
 import Navbar from './components/Navbar.vue'
 import MarketOverview from './components/MarketOverview.vue'

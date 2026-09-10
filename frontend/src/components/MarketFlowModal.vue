@@ -1,44 +1,44 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
     @click.self="$emit('close')"
   >
     <div 
-      class="bg-theme-card border border-theme-border rounded-3xl w-full max-w-7xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
+      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-7xl max-h-[94vh] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
     >
       <!-- ==================== MODAL HEADER ==================== -->
-      <div class="px-6 py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
-            <ArrowLeftRight class="w-5 h-5 text-slate-950 stroke-[2.5]" />
+      <div class="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
+            <ArrowLeftRight class="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 stroke-[2.5]" />
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                Báo Cáo Giao Dịch Nhà Đầu Tư Nước Ngoài & Trong Nước Rổ VN30
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <h2 class="text-sm sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight truncate">
+                Dòng Tiền Ngoại & Nội VN30
               </h2>
               <span class="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30">
-                TRADING FLOW INSIGHTS
+                TRADING FLOW
               </span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Theo dõi chi tiết khối lượng Mua & Bán (triệu cổ phiếu), Mua/Bán Ròng giữa Khối Ngoại và Nhà đầu tư Trong nước.
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+              Khối lượng Mua & Bán, Mua/Bán Ròng giữa Khối Ngoại và Trong Nước
             </p>
           </div>
         </div>
 
         <button 
           @click="$emit('close')" 
-          class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          class="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
           title="Đóng cửa sổ (Esc)"
         >
-          <X class="w-5 h-5" />
+          <X class="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       <!-- ==================== PERIOD SELECTOR BAR ==================== -->
-      <div class="px-6 py-3 border-b border-theme-border bg-theme-card/60 flex flex-wrap items-center justify-between gap-3">
+      <div class="px-4 sm:px-6 py-2.5 sm:py-3 border-b border-theme-border bg-theme-card/60 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
         <!-- 3 Time Period Tabs -->
         <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-theme-border text-xs font-semibold">
           <button 
@@ -324,8 +324,14 @@
 
           <!-- Section 3: Detailed Table of 30 VN30 Stocks -->
           <div class="rounded-2xl border border-theme-border overflow-hidden bg-theme-card shadow-sm">
+            <!-- Mobile Scroll Hint -->
+            <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
+              <ArrowLeftRight class="w-3.5 h-3.5 shrink-0" />
+              <span>Vuốt ngang bảng để xem đầy đủ cột Mua / Bán Khối Ngoại & Trong Nước</span>
+            </div>
+
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-theme-text border-collapse">
+              <table class="w-full text-left text-xs text-theme-text border-collapse min-w-[850px]">
                 <thead>
                   <tr class="border-b border-theme-border bg-theme-subtle text-theme-sub text-[11px] font-bold uppercase tracking-wider select-none">
                     <!-- Column: Mã & Doanh Nghiệp -->
