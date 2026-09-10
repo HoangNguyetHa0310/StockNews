@@ -18,7 +18,7 @@
       />
 
       <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->
-      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-32 md:pb-8 space-y-4 sm:space-y-8">
+      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-6 md:pb-8 space-y-4 sm:space-y-6">
         
         <!-- API Offline Warning Alert (If Backend Not Running) -->
         <div 
@@ -101,7 +101,7 @@
       />
 
       <!-- Footer -->
-      <footer class="border-t border-theme-border py-6 text-center text-xs text-theme-text-muted font-mono mt-8 mb-14 md:mb-0 transition-colors duration-200">
+      <footer class="border-t border-theme-border py-4 pb-20 md:pb-6 text-center text-xs text-theme-muted font-mono mt-4 transition-colors duration-200">
         <p>&copy; 2026 VN30 Quantitative & AI Intelligence Platform. All rights reserved.</p>
       </footer>
 

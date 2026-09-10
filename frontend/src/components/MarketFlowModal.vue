@@ -325,20 +325,23 @@
           <!-- Section 3: Detailed Table of 30 VN30 Stocks -->
           <div class="rounded-2xl border border-theme-border overflow-hidden bg-theme-card shadow-sm">
             <!-- Mobile Scroll Hint -->
-            <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
-              <ArrowLeftRight class="w-3.5 h-3.5 shrink-0" />
-              <span>Vuốt ngang bảng để xem đầy đủ cột Mua / Bán Khối Ngoại & Trong Nước</span>
+            <div class="md:hidden px-3.5 py-2 bg-cyan-500/5 border-b border-theme-border flex items-center justify-between gap-2 text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">
+              <div class="flex items-center gap-1.5">
+                <ArrowLeftRight class="w-3.5 h-3.5 shrink-0 animate-pulse" />
+                <span>Vuốt ngang bảng để xem đầy đủ cột Mua / Bán</span>
+              </div>
+              <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded font-mono font-bold border border-cyan-500/20 shrink-0">Cố định Mã CP</span>
             </div>
 
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-theme-text border-collapse min-w-[850px]">
+              <table class="w-full text-left text-xs text-theme-text border-separate border-spacing-0 min-w-[920px]">
                 <thead>
-                  <tr class="border-b border-theme-border bg-theme-subtle text-theme-sub text-[11px] font-bold uppercase tracking-wider select-none">
-                    <!-- Column: Mã & Doanh Nghiệp -->
+                  <tr class="bg-theme-subtle text-theme-sub text-[11px] font-bold uppercase tracking-wider select-none">
+                    <!-- Column: Mã & Doanh Nghiệp (Cố định sticky left-0) -->
                     <th 
                       @click="toggleSort('ticker')" 
-                      class="py-3 px-3 cursor-pointer transition select-none group"
-                      :class="isSorted('ticker') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
+                      class="py-3 px-3 cursor-pointer transition select-none group sticky left-0 z-30 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] w-40 min-w-[140px] max-w-[160px]"
+                      :class="isSorted('ticker') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'bg-theme-subtle text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center gap-1">
                         <span>Mã CP & Doanh Nghiệp</span>
@@ -349,7 +352,7 @@
                     <!-- Group: Khối Ngoại -->
                     <th 
                       @click="toggleSort('foreign_buy_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('foreign_buy_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -361,7 +364,7 @@
 
                     <th 
                       @click="toggleSort('foreign_sell_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('foreign_sell_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -373,7 +376,7 @@
 
                     <th 
                       @click="toggleSort('foreign_net_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('foreign_net_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -386,7 +389,7 @@
                     <!-- Group: Trong Nước -->
                     <th 
                       @click="toggleSort('domestic_buy_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('domestic_buy_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -398,7 +401,7 @@
 
                     <th 
                       @click="toggleSort('domestic_sell_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('domestic_sell_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -410,7 +413,7 @@
 
                     <th 
                       @click="toggleSort('domestic_net_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('domestic_net_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -423,7 +426,7 @@
                     <!-- Group: Tổng Khối Lượng -->
                     <th 
                       @click="toggleSort('total_volume_million')" 
-                      class="py-3 px-3 text-right cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-right cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('total_volume_million') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-end gap-1">
@@ -435,7 +438,7 @@
 
                     <th 
                       @click="toggleSort('foreign_ratio_pct')" 
-                      class="py-3 px-3 text-center cursor-pointer transition select-none group"
+                      class="py-3 px-3 text-center cursor-pointer transition select-none group border-b border-theme-border bg-theme-subtle"
                       :class="isSorted('foreign_ratio_pct') ? 'text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-500/10 dark:bg-cyan-500/20' : 'text-theme-sub hover:text-cyan-500 hover:bg-theme-subtle-2'"
                     >
                       <div class="flex items-center justify-center gap-1">
@@ -445,39 +448,39 @@
                       <span class="text-[9px] font-normal lowercase block" :class="isSorted('foreign_ratio_pct') ? 'text-cyan-600 dark:text-cyan-400 font-semibold' : 'text-theme-muted'">(%)</span>
                     </th>
 
-                    <th class="py-3 px-3 text-center text-theme-sub">Tín Hiệu Dòng Tiền</th>
+                    <th class="py-3 px-3 text-center text-theme-sub border-b border-theme-border bg-theme-subtle">Tín Hiệu Dòng Tiền</th>
                   </tr>
                 </thead>
 
-                <tbody class="divide-y divide-theme-border font-mono">
+                <tbody class="font-mono">
                   <tr 
                     v-for="s in displayedStocks" 
                     :key="s.ticker"
-                    class="hover:bg-cyan-500/5 transition duration-150 cursor-pointer group"
+                    class="hover:bg-theme-card-hover transition duration-150 cursor-pointer group"
                     @click="$emit('select-stock', s)"
                     title="Bấm để xem biểu đồ TradingView & phân tích chi tiết mã này"
                   >
-                    <!-- Ticker & Company -->
+                    <!-- Ticker & Company (Sticky cố định đứng yên khi cuộn ngang) -->
                     <td 
-                      class="py-3 px-3"
-                      :class="isSorted('ticker') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
+                      class="py-3 px-3 sticky left-0 z-20 border-b border-r border-theme-border shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] dark:shadow-[3px_0_6px_-2px_rgba(0,0,0,0.35)] transition-colors w-40 min-w-[140px] max-w-[160px]"
+                      :class="isSorted('ticker') ? 'bg-cyan-500/[0.08] dark:bg-cyan-500/[0.12]' : 'bg-theme-card group-hover:bg-theme-card-hover'"
                     >
-                      <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-1.5 flex-wrap">
                         <span class="font-bold text-sm text-theme-text group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition">
                           {{ s.ticker }}
                         </span>
-                        <span class="text-[10px] font-sans px-1.5 py-0.5 rounded bg-theme-subtle text-theme-muted border border-theme-border">
+                        <span class="text-[9px] font-sans px-1.5 py-0.5 rounded bg-theme-subtle text-theme-muted border border-theme-border truncate max-w-[95px]">
                           {{ s.sector }}
                         </span>
                       </div>
-                      <p class="text-[10px] font-sans text-theme-muted line-clamp-1 mt-0.5">
+                      <p class="text-[10px] font-sans text-theme-muted truncate mt-0.5" :title="s.company_name">
                         {{ s.company_name }}
                       </p>
                     </td>
 
                     <!-- Foreign Buy (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right font-semibold text-emerald-600 dark:text-emerald-400"
+                      class="py-3 px-3 text-right font-semibold text-emerald-600 dark:text-emerald-400 border-b border-theme-border"
                       :class="isSorted('foreign_buy_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       {{ formatNumber(s.foreign_buy_million) }}
@@ -485,15 +488,15 @@
 
                     <!-- Foreign Sell (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right font-semibold text-rose-500 dark:text-rose-400"
+                      class="py-3 px-3 text-right font-semibold text-rose-500 dark:text-rose-400 border-b border-theme-border"
                       :class="isSorted('foreign_sell_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       {{ formatNumber(s.foreign_sell_million) }}
                     </td>
 
-                    <!-- Foreign Net (Tr CP) - KHÔNG CÒN BỊ BÔI MÀU CỐ ĐỊNH, CHỈ BÔI KHI SẮP XẾP -->
+                    <!-- Foreign Net (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right"
+                      class="py-3 px-3 text-right border-b border-theme-border"
                       :class="isSorted('foreign_net_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       <span 
@@ -510,7 +513,7 @@
 
                     <!-- Domestic Buy (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right text-theme-text"
+                      class="py-3 px-3 text-right text-theme-text border-b border-theme-border"
                       :class="isSorted('domestic_buy_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       {{ formatNumber(s.domestic_buy_million) }}
@@ -518,15 +521,15 @@
 
                     <!-- Domestic Sell (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right text-theme-text"
+                      class="py-3 px-3 text-right text-theme-text border-b border-theme-border"
                       :class="isSorted('domestic_sell_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       {{ formatNumber(s.domestic_sell_million) }}
                     </td>
 
-                    <!-- Domestic Net (Tr CP) - KHÔNG CÒN BỊ BÔI MÀU CỐ ĐỊNH, CHỈ BÔI KHI SẮP XẾP -->
+                    <!-- Domestic Net (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right"
+                      class="py-3 px-3 text-right border-b border-theme-border"
                       :class="isSorted('domestic_net_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       <span 
@@ -543,7 +546,7 @@
 
                     <!-- Total Volume (Tr CP) -->
                     <td 
-                      class="py-3 px-3 text-right font-bold text-theme-text"
+                      class="py-3 px-3 text-right font-bold text-theme-text border-b border-theme-border"
                       :class="isSorted('total_volume_million') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       {{ formatNumber(s.total_volume_million) }}
@@ -551,7 +554,7 @@
 
                     <!-- Foreign Ratio (%) -->
                     <td 
-                      class="py-3 px-3 text-center"
+                      class="py-3 px-3 text-center border-b border-theme-border"
                       :class="isSorted('foreign_ratio_pct') ? 'bg-cyan-500/[0.04] dark:bg-cyan-500/[0.07]' : ''"
                     >
                       <div class="flex items-center justify-center gap-1.5">
@@ -563,7 +566,7 @@
                     </td>
 
                     <!-- Signal Badge -->
-                    <td class="py-3 px-3 text-center">
+                    <td class="py-3 px-3 text-center border-b border-theme-border">
                       <span 
                         class="px-2 py-0.5 rounded-full text-[10px] font-sans font-bold inline-block border whitespace-nowrap"
                         :class="getSignalBadgeClass(s.signal_type)"
@@ -575,7 +578,7 @@
 
                   <!-- Empty Result State -->
                   <tr v-if="displayedStocks.length === 0">
-                    <td colspan="10" class="py-12 text-center text-theme-muted font-sans text-xs">
+                    <td colspan="10" class="py-12 text-center text-theme-muted font-sans text-xs border-b border-theme-border">
                       Không tìm thấy mã cổ phiếu nào phù hợp với bộ lọc hiện tại.
                     </td>
                   </tr>
