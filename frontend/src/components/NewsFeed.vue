@@ -128,7 +128,7 @@
             <div class="flex items-center gap-1.5">
               <!-- Region badge -->
               <span 
-                class="px-2 py-0.5 rounded-md font-bold"
+                class="px-2 py-0.5 rounded-md font-bold whitespace-nowrap shrink-0"
                 :class="item.region === 'domestic' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'"
               >
                 {{ item.region === 'domestic' ? '🇻🇳 Trong Nước' : '🌐 Quốc Tế' }}
@@ -139,7 +139,7 @@
             </div>
 
             <!-- Published At -->
-            <span class="text-theme-muted flex items-center gap-1">
+            <span class="text-theme-muted flex items-center gap-1 whitespace-nowrap shrink-0">
               <Clock class="w-3 h-3" /> {{ item.published_at }}
             </span>
           </div>
@@ -192,9 +192,9 @@
           </div>
 
           <!-- Impact Status Badge -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <span 
-              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold"
+              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0"
               :class="getSentimentClass(item.sentiment)"
             >
               {{ item.sentiment_label }}

@@ -1,23 +1,23 @@
 <template>
-  <div class="space-y-6 animate-fade-in">
+  <div class="space-y-6 animate-fade-in pb-12 md:pb-6">
     <!-- Header -->
-    <div class="p-6 rounded-3xl bg-gradient-to-r from-amber-500/10 via-theme-subtle to-rose-500/10 border border-theme-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-amber-500/10 via-theme-subtle to-rose-500/10 border border-theme-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-amber-500/10 text-amber-500 border border-amber-500/30 flex items-center gap-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-amber-500/10 text-amber-500 border border-amber-500/30 flex items-center gap-1 whitespace-nowrap shrink-0">
             <ShieldAlert class="w-3.5 h-3.5" /> BÁO CÁO RỦI RO
           </span>
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap shrink-0">
             24/7 REAL-TIME
           </span>
-          <h2 class="text-xl font-bold text-theme-text">Báo Cáo Đánh Giá Rủi Ro Tin Tức Vĩ Mô</h2>
+          <h2 class="text-lg sm:text-xl font-bold text-theme-text">Báo Cáo Đánh Giá Rủi Ro Tin Tức Vĩ Mô</h2>
         </div>
         <p class="text-xs text-theme-sub mt-1">
           Mô hình lượng hóa mức độ rủi ro từ các sự kiện chính trị, lạm phát và dòng vốn toàn cầu lên danh mục đầu tư.
         </p>
       </div>
 
-      <div class="text-xs font-mono text-theme-sub">
+      <div class="text-xs font-mono text-theme-sub whitespace-nowrap shrink-0">
         Cập nhật: <strong class="text-theme-text">{{ reportData?.last_updated || '--' }}</strong>
       </div>
     </div>
@@ -85,23 +85,23 @@
         <div 
           v-for="(matrix, idx) in reportData?.asset_impact_matrix" 
           :key="idx"
-          class="p-5 rounded-2xl bg-theme-card border border-theme-border shadow-sm space-y-3 flex flex-col justify-between"
+          class="p-4 sm:p-5 rounded-2xl bg-theme-card border border-theme-border shadow-sm space-y-3 flex flex-col justify-between"
         >
           <div>
-            <div class="flex items-center justify-between pb-2 border-b border-theme-border">
-              <h4 class="font-bold text-sm text-theme-text">{{ matrix.asset_name }}</h4>
+            <div class="flex items-start justify-between gap-3 pb-2.5 border-b border-theme-border">
+              <h4 class="font-bold text-sm text-theme-text leading-snug min-w-0 flex-1">{{ matrix.asset_name }}</h4>
               <span 
-                class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                :class="matrix.impact_level === 'Cao' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/30' : 'bg-amber-500/10 text-amber-500 border border-amber-500/30'"
+                class="px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold whitespace-nowrap shrink-0 leading-none shadow-sm"
+                :class="getRiskBadgeClass(matrix)"
               >
                 Rủi ro: {{ matrix.impact_level }}
               </span>
             </div>
 
             <div class="mt-3 space-y-2 text-xs">
-              <div>
-                <span class="text-theme-muted font-medium">Xu hướng dự báo:</span>
-                <span class="font-semibold text-cyan-600 dark:text-cyan-400 ml-1.5">{{ matrix.trend_bias }}</span>
+              <div class="flex flex-wrap items-baseline gap-1.5">
+                <span class="text-theme-muted font-medium shrink-0">Xu hướng dự báo:</span>
+                <span class="font-semibold text-cyan-600 dark:text-cyan-400 leading-snug">{{ matrix.trend_bias }}</span>
               </div>
               <div>
                 <span class="text-theme-muted font-medium">Động lực hỗ trợ:</span>
@@ -117,7 +117,7 @@
           <!-- Recommendation Banner -->
           <div class="p-3 rounded-xl bg-theme-subtle border border-theme-border text-xs">
             <span class="font-bold text-theme-text block mb-0.5">Khuyến nghị chiến lược:</span>
-            <p class="text-theme-sub">{{ matrix.recommendation }}</p>
+            <p class="text-theme-sub leading-relaxed">{{ matrix.recommendation }}</p>
           </div>
         </div>
       </div>
@@ -159,6 +159,18 @@ import { fetchNewsRiskAssessment } from '../api'
 
 const reportData = ref(null)
 const isLoading = ref(true)
+
+function getRiskBadgeClass(matrix) {
+  const level = (matrix?.impact_level || '').toLowerCase()
+  const color = (matrix?.impact_color || '').toLowerCase()
+  if (level.includes('cao') || color === 'rose' || color === 'red') {
+    return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+  }
+  if (level.includes('trung') || color === 'amber' || color === 'yellow') {
+    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+  }
+  return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+}
 
 async function loadReport() {
   isLoading.value = true
