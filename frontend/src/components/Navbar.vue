@@ -1,6 +1,6 @@
 <template>
   <nav 
-    class="border-b border-theme-border bg-theme-card/90 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200 pt-safe"
+    class="border-b border-theme-border bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200 pt-safe"
     style="padding-top: env(safe-area-inset-top, 0px);"
   >
     <!-- Widescreen Container: Tối ưu co giãn trên điện thoại và màn hình rộng -->

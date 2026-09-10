@@ -65,7 +65,7 @@
         <div 
           v-for="mover in hotMovers" 
           :key="mover.ticker"
-          class="p-4 rounded-2xl bg-theme-card/95 dark:bg-slate-900/80 border border-theme-border hover:border-amber-500/50 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3 relative overflow-hidden group"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-theme-border hover:border-amber-500/50 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3 relative overflow-hidden group"
         >
           <!-- Accent Top Bar -->
           <div 

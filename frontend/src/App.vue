@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-theme-bg text-theme-text flex font-sans transition-colors duration-200">
+  <div class="min-h-screen min-h-[100dvh] bg-theme-bg text-theme-text flex font-sans transition-colors duration-200">
     
     <!-- Sidebar Navigation bên lề trái (ở đúng vị trí ô đỏ bạn khoanh) -->
     <Sidebar 
@@ -8,7 +8,7 @@
     />
 
     <!-- Khung nội dung chính bên phải -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+    <div class="flex-1 flex flex-col min-w-0">
       
       <!-- Top Navbar Header -->
       <Navbar 
@@ -18,7 +18,7 @@
       />
 
       <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->
-      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-6 md:pb-8 space-y-4 sm:space-y-6">
+      <main class="flex-1 w-full max-w-[95%] xl:max-w-[92%] 2xl:max-w-[88%] mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-24 md:pb-8 space-y-4 sm:space-y-6">
         
         <!-- API Offline Warning Alert (If Backend Not Running) -->
         <div 
@@ -77,77 +77,78 @@
 
       </main>
 
-      <!-- Market Recommendation Report Modal (Báo cáo Phân bổ % & Lý do VN30) -->
-      <MarketReportModal 
-        :is-open="isReportModalOpen"
-        :report-data="recommendationReportData"
-        :is-loading="isLoadingReport"
-        @close="isReportModalOpen = false"
-        @select-stock="openStockModal"
-      />
-
-      <!-- Market Trading Flow Modal (Báo cáo Khối Ngoại & Trong Nước VN30 Hôm nay, 1 tuần, 1 tháng) -->
-      <MarketFlowModal 
-        :is-open="isFlowModalOpen"
-        @close="isFlowModalOpen = false"
-        @select-stock="openStockModal"
-      />
-
-      <!-- Stock Detail Modal with TradingView Charts (Hiển thị nổi lên trên các báo cáo) -->
-      <StockModal 
-        :is-open="isModalOpen" 
-        :stock="selectedStock" 
-        @close="closeStockModal" 
-      />
-
       <!-- Footer -->
-      <footer class="border-t border-theme-border py-4 pb-20 md:pb-6 text-center text-xs text-theme-muted font-mono mt-4 transition-colors duration-200">
+      <footer class="border-t border-theme-border py-4 pb-24 md:pb-6 text-center text-xs text-theme-muted font-mono mt-4 transition-colors duration-200">
         <p>&copy; 2026 VN30 Quantitative & AI Intelligence Platform. All rights reserved.</p>
       </footer>
-
-      <!-- Mobile Bottom Navigation Bar (Thanh điều hướng cố định dưới đáy màn hình điện thoại) -->
-      <nav 
-        class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-theme-card/95 backdrop-blur-lg border-t border-theme-border flex items-center justify-around px-3 pt-2 pb-safe shadow-lg select-none"
-        style="padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));"
-      >
-        <!-- Tab 1: Thị Trường VN30 -->
-        <button 
-          @click="handleSelectTab('dashboard')"
-          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
-          :class="currentTab === 'dashboard' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
-        >
-          <LayoutDashboard class="w-5 h-5" />
-          <span class="text-[11px] tracking-tight">Thị Trường</span>
-          <span v-if="currentTab === 'dashboard'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
-        </button>
-
-        <!-- Tab 2: Tin Tức Thị Trường -->
-        <button 
-          @click="handleSelectTab('news')"
-          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
-          :class="currentTab === 'news' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
-        >
-          <div class="relative">
-            <Newspaper class="w-5 h-5" />
-            <span class="w-2 h-2 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5"></span>
-          </div>
-          <span class="text-[11px] tracking-tight">Tin Tức</span>
-          <span v-if="currentTab === 'news'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
-        </button>
-
-        <!-- Tab 3: Đánh Giá Rủi Ro -->
-        <button 
-          @click="handleSelectTab('risk')"
-          class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
-          :class="currentTab === 'risk' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
-        >
-          <ShieldAlert class="w-5 h-5" />
-          <span class="text-[11px] tracking-tight">Rủi Ro AI</span>
-          <span v-if="currentTab === 'risk'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
-        </button>
-      </nav>
-
     </div>
+
+    <!-- Modals (Đặt ngoài flex-1 để không bị ảnh hưởng ngữ cảnh hiển thị) -->
+    <!-- Market Recommendation Report Modal (Báo cáo Phân bổ % & Lý do VN30) -->
+    <MarketReportModal 
+      :is-open="isReportModalOpen"
+      :report-data="recommendationReportData"
+      :is-loading="isLoadingReport"
+      @close="isReportModalOpen = false"
+      @select-stock="openStockModal"
+    />
+
+    <!-- Market Trading Flow Modal (Báo cáo Khối Ngoại & Trong Nước VN30 Hôm nay, 1 tuần, 1 tháng) -->
+    <MarketFlowModal 
+      :is-open="isFlowModalOpen"
+      @close="isFlowModalOpen = false"
+      @select-stock="openStockModal"
+    />
+
+    <!-- Stock Detail Modal with TradingView Charts (Hiển thị nổi lên trên các báo cáo) -->
+    <StockModal 
+      :is-open="isModalOpen" 
+      :stock="selectedStock" 
+      @close="closeStockModal" 
+    />
+
+    <!-- Mobile Bottom Navigation Bar (Thanh điều hướng cố định chân trang trên điện thoại) -->
+    <nav 
+      class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-theme-border flex items-center justify-around px-3 pt-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.45)] select-none"
+      style="padding-bottom: max(0.5rem, calc(0.5rem + env(safe-area-inset-bottom, 0px))); -webkit-transform: translateZ(0); transform: translateZ(0);"
+    >
+      <!-- Tab 1: Thị Trường VN30 -->
+      <button 
+        @click="handleSelectTab('dashboard')"
+        class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+        :class="currentTab === 'dashboard' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+      >
+        <LayoutDashboard class="w-5 h-5" />
+        <span class="text-[11px] tracking-tight">Thị Trường</span>
+        <span v-if="currentTab === 'dashboard'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+      </button>
+
+      <!-- Tab 2: Tin Tức Thị Trường -->
+      <button 
+        @click="handleSelectTab('news')"
+        class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+        :class="currentTab === 'news' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+      >
+        <div class="relative">
+          <Newspaper class="w-5 h-5" />
+          <span class="w-2 h-2 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5"></span>
+        </div>
+        <span class="text-[11px] tracking-tight">Tin Tức</span>
+        <span v-if="currentTab === 'news'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+      </button>
+
+      <!-- Tab 3: Đánh Giá Rủi Ro -->
+      <button 
+        @click="handleSelectTab('risk')"
+        class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition relative"
+        :class="currentTab === 'risk' ? 'text-cyan-500 font-bold' : 'text-theme-sub hover:text-theme-text'"
+      >
+        <ShieldAlert class="w-5 h-5" />
+        <span class="text-[11px] tracking-tight">Rủi Ro AI</span>
+        <span v-if="currentTab === 'risk'" class="w-1 h-1 rounded-full bg-cyan-500 absolute -bottom-0.5"></span>
+      </button>
+    </nav>
+
   </div>
 </template>
 
@@ -203,6 +204,7 @@ const topStock = computed(() => {
 
 function handleSelectTab(tab) {
   currentTab.value = tab
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 async function loadData(isSilent = false) {

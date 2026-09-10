@@ -1,7 +1,7 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    class="fixed inset-0 z-60 flex items-center justify-center p-2 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
     @click.self="$emit('close')"
   >
     <div 

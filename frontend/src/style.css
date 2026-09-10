@@ -86,6 +86,7 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     background-color: var(--color-bg-page);
     color: var(--color-text-main);
+    overflow-x: hidden;
   }
 }
 
@@ -121,7 +122,7 @@
 }
 
 .pb-safe {
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: max(0.5rem, calc(0.5rem + env(safe-area-inset-bottom, 0px)));
 }
 
 @supports (padding-top: env(safe-area-inset-top)) {
@@ -130,9 +131,15 @@
   }
 }
 
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  nav.fixed.bottom-0 {
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-  }
+/* Đảm bảo thanh điều hướng dưới cùng luôn ghim cố định chính xác trên mọi trình duyệt di động (iOS Safari, Chrome, Android) */
+nav.fixed.bottom-0 {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 50 !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  padding-bottom: max(0.5rem, calc(0.5rem + env(safe-area-inset-bottom, 0px)));
 }
 
