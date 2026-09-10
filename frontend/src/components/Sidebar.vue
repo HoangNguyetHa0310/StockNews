@@ -85,9 +85,9 @@
       <div v-if="!isCollapsed" class="space-y-1">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span class="font-mono text-[11px] text-theme-sub">FastAPI Online</span>
+          <span class="font-mono text-[11px] text-theme-sub">Hệ thống Online</span>
         </div>
-        <p class="text-[10px] text-theme-muted font-mono">Port: 8000 &bull; VN30 v2.5</p>
+        <p class="text-[10px] text-theme-muted font-mono">Real-time &bull; VN30 v2.5</p>
       </div>
       <div v-else class="flex justify-center">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" title="Hệ thống đang hoạt động"></span>

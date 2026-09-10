@@ -62,30 +62,6 @@
               :stocks="stocks" 
               @select-stock="openStockModal" 
             />
-
-            <!-- Explanatory Pillars -->
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-              <div class="p-5 rounded-2xl bg-theme-card border border-theme-border text-xs text-theme-text-sub space-y-2 shadow-sm">
-                <div class="flex items-center gap-2 text-theme-text font-semibold text-sm">
-                  <Cpu class="w-4 h-4 text-cyan-500" /> Thuật Toán Machine Learning (LightGBM)
-                </div>
-                <p>Mô hình Gradient Boosted Trees được huấn luyện trên chuỗi thời gian (TimeSeriesSplit) dự đoán xác suất giá cổ phiếu tăng trên 1.0% sau T+3 phiên, tận dụng mối tương quan phi tuyến của 25 chỉ báo kỹ thuật.</p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-theme-card border border-theme-border text-xs text-theme-text-sub space-y-2 shadow-sm">
-                <div class="flex items-center gap-2 text-theme-text font-semibold text-sm">
-                  <Sliders class="w-4 h-4 text-emerald-500" /> Hệ Thống Điểm Đa Nhân Tố (Quant 0-100)
-                </div>
-                <p>Điểm Quant tổng hợp 4 trụ cột: Xu hướng (30%), Động lượng RSI/MACD (25%), Dòng tiền OBV/MFI (25%) và Dự phóng AI (20%) giúp triệt tiêu các tín hiệu bẫy tăng giá (bull-trap).</p>
-              </div>
-
-              <div class="p-5 rounded-2xl bg-theme-card border border-theme-border text-xs text-theme-text-sub space-y-2 shadow-sm">
-                <div class="flex items-center gap-2 text-theme-text font-semibold text-sm">
-                  <ShieldAlert class="w-4 h-4 text-amber-500" /> Quản Trị Rủi Ro Chặt Chẽ
-                </div>
-                <p>Mỗi mã đều được tự động tính toán mức Dừng lỗ (Stoploss) và Mục tiêu (Target) dựa trên độ biến động thực tế ATR, luôn đảm bảo tỷ lệ Risk/Reward tối thiểu 1:1.5.</p>
-              </div>
-            </section>
           </template>
         </template>
 
@@ -126,8 +102,7 @@
 
       <!-- Footer -->
       <footer class="border-t border-theme-border py-6 text-center text-xs text-theme-text-muted font-mono mt-8 mb-14 md:mb-0 transition-colors duration-200">
-        <p>VN30 Quantitative & AI Intelligence Platform &bull; FastAPI + Vue 3 Architecture</p>
-        <p class="mt-1 text-[11px]">Dữ liệu nguồn từ Vnstock API &bull; Chu kỳ làm mới ngầm: {{ refreshInterval }}s (Cấu hình tại config.py)</p>
+        <p>&copy; 2026 VN30 Quantitative & AI Intelligence Platform. All rights reserved.</p>
       </footer>
 
       <!-- Mobile Bottom Navigation Bar (Thanh điều hướng cố định dưới đáy màn hình điện thoại) -->
@@ -175,7 +150,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { AlertCircle, Cpu, Sliders, ShieldAlert, LayoutDashboard, Newspaper } from 'lucide-vue-next'
+import { AlertCircle, ShieldAlert, LayoutDashboard, Newspaper } from 'lucide-vue-next'
 import Sidebar from './components/Sidebar.vue'
 import Navbar from './components/Navbar.vue'
 import MarketOverview from './components/MarketOverview.vue'

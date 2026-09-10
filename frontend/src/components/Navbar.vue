@@ -14,7 +14,7 @@
               VN30 QUANT & AI
             </h1>
             <span class="hidden sm:inline-block text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30">
-              FASTAPI + VUE 3
+              FINANCE PRO
             </span>
           </div>
           <p class="text-[10px] sm:text-[11px] text-theme-text-muted hidden sm:block truncate">
@@ -43,10 +43,10 @@
           <span class="md:hidden">{{ marketData.market_schedule.is_trading ? 'Mở' : 'Đóng' }}</span>
         </div>
 
-        <!-- Live Auto-Refresh Status Pill (Tự động làm mới ngầm theo chu kỳ config.py) -->
+        <!-- Live Auto-Refresh Status Pill -->
         <div 
           class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 text-[11px] sm:text-xs font-mono font-medium shadow-sm"
-          :title="`Tự động làm mới dữ liệu mỗi ${refreshInterval}s theo config.py (Cổ phiếu 9h-15h | Tin tức 24/7)`"
+          :title="`Tự động làm mới dữ liệu mỗi ${refreshInterval}s (Cổ phiếu 9h-15h | Tin tức 24/7)`"
         >
           <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
           <span class="hidden sm:inline">Làm mới:</span>
