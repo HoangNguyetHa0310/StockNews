@@ -6,16 +6,18 @@ Cổ phiếu VN30, Giá Vàng (Gold), Bitcoin (BTC), và Chính trị / Vĩ mô.
 """
 from datetime import datetime
 from typing import List, Dict, Optional
+from config import get_vietnam_now
 
 
 class NewsService:
     def __init__(self):
-        self.last_sync = datetime.now()
+        self.last_sync = get_vietnam_now()
 
     def get_market_news(self, region: Optional[str] = None, asset: Optional[str] = None, search: Optional[str] = None) -> List[Dict]:
         """
         Lấy danh sách tin tức tài chính mới nhất, phân chia trong nước/quốc tế và các loại tài sản.
         """
+        now_vn = get_vietnam_now().strftime("%H:%M %d/%m/%Y")
         news_items = [
             # ---------------- TIN TRONG NƯỚC ----------------
             {
@@ -32,7 +34,7 @@ class NewsService:
                 "risk_level": "medium",
                 "source": "VnEconomy / Cổng TT NHNN",
                 "published_at": "15 phút trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "cyan"
             },
             {
@@ -49,7 +51,7 @@ class NewsService:
                 "risk_level": "low",
                 "source": "UBCKNN / Báo Đầu Tư",
                 "published_at": "40 phút trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "emerald"
             },
             {
@@ -66,7 +68,7 @@ class NewsService:
                 "risk_level": "high",
                 "source": "Cafef / Tổng hợp",
                 "published_at": "1 giờ trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "amber"
             },
             {
@@ -83,7 +85,7 @@ class NewsService:
                 "risk_level": "low",
                 "source": "HOSE / Dữ liệu Quant",
                 "published_at": "1.5 giờ trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "emerald"
             },
 
@@ -102,7 +104,7 @@ class NewsService:
                 "risk_level": "high",
                 "source": "Reuters / Bloomberg",
                 "published_at": "25 phút trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "rose"
             },
             {
@@ -119,7 +121,7 @@ class NewsService:
                 "risk_level": "medium",
                 "source": "Kitco / Financial Times",
                 "published_at": "45 phút trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "amber"
             },
             {
@@ -136,7 +138,7 @@ class NewsService:
                 "risk_level": "medium",
                 "source": "CoinDesk / The Block",
                 "published_at": "1 giờ trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "cyan"
             },
             {
@@ -153,7 +155,7 @@ class NewsService:
                 "risk_level": "medium",
                 "source": "Wall Street Journal / CNBC",
                 "published_at": "2 giờ trước",
-                "time_str": datetime.now().strftime("%H:%M %d/%m/%Y"),
+                "time_str": now_vn,
                 "badge_color": "indigo"
             }
         ]
@@ -181,7 +183,7 @@ class NewsService:
         Báo cáo phân tích và đánh giá rủi ro vĩ mô / tin tức tác động lên danh mục tài sản đầu tư.
         """
         return {
-            "last_updated": datetime.now().strftime("%H:%M %d/%m/%Y"),
+            "last_updated": get_vietnam_now().strftime("%H:%M %d/%m/%Y"),
             "market_risk_index": 58,  # Điểm rủi ro từ 0 (cực an toàn) đến 100 (cực kỳ rủi ro)
             "risk_status": "TRUNG BÌNH - THẬN TRỌNG",
             "risk_color": "amber",

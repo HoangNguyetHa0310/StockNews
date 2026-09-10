@@ -17,7 +17,8 @@ import uvicorn
 import asyncio
 from config import (
     VN30_TICKERS, SERVER_CONFIG, AUTO_REFRESH_CONFIG,
-    MARKET_SCHEDULE_CONFIG, get_market_trading_status
+    MARKET_SCHEDULE_CONFIG, get_market_trading_status,
+    get_vietnam_now, VIETNAM_TZ
 )
 from data_loader import DataLoader
 from feature_engineering import add_technical_features
@@ -112,7 +113,7 @@ def _refresh_calculations(force_update_api: bool = False):
     STATE["processed_stocks"] = processed
     STATE["stock_analyses"] = analyses
     STATE["market_summary"] = market_summary
-    STATE["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    STATE["last_updated"] = get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 async def auto_refresh_worker():
@@ -405,7 +406,7 @@ def get_news_feed(
         "status": "success",
         "count": len(items),
         "data": items,
-        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "last_updated": get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
 

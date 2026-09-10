@@ -3,7 +3,16 @@
 Cấu hình hệ thống Phân tích Định lượng & Dự đoán Machine Learning VN30
 """
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# ==================== MÚI GIỜ HỆ THỐNG ====================
+# Chuẩn hóa múi giờ Việt Nam (UTC+7 / Asia/Ho_Chi_Minh) cho toàn bộ backend,
+# đảm bảo hoạt động chính xác cả khi chạy local và khi deploy trên Cloud (Render, Docker, VPS chạy múi giờ UTC).
+VIETNAM_TZ = timezone(timedelta(hours=7))
+
+def get_vietnam_now() -> datetime:
+    """Lấy thời gian hiện tại chuẩn theo múi giờ Việt Nam (UTC+7)."""
+    return datetime.now(VIETNAM_TZ)
 
 # ==================== ĐƯỜNG DẪN HỆ THỐNG ====================
 BASE_DIR = Path(__file__).resolve().parent
@@ -29,7 +38,7 @@ VN30_TICKERS = [
 # ==================== THỜI GIAN DỮ LIỆU ====================
 # Ngày bắt đầu lấy dữ liệu lịch sử (khuyến nghị >= 2-3 năm để mô hình học các chu kỳ)
 DEFAULT_START_DATE = "2021-01-01"
-TODAY_DATE = datetime.now().strftime("%Y-%m-%d")
+TODAY_DATE = get_vietnam_now().strftime("%Y-%m-%d")
 
 # ==================== THÔNG SỐ CHỈ BÁO KỸ THUẬT ====================
 INDICATOR_PARAMS = {
@@ -112,17 +121,25 @@ MARKET_SCHEDULE_CONFIG = {
 def get_market_trading_status(now: datetime = None) -> dict:
     """
     Kiểm tra trạng thái thị trường chứng khoán Việt Nam (HOSE/VN30).
-    Trả về: { is_trading: bool, session_name: str, can_fetch_stocks: bool, detail: str }
+    Luôn quy đổi chuẩn xác về múi giờ Việt Nam (UTC+7 / Asia/Ho_Chi_Minh).
+    Trả về: { is_trading: bool, session_name: str, can_fetch_stocks: bool, detail: str, current_time: str }
     """
     if now is None:
-        now = datetime.now()
+        now = get_vietnam_now()
+    elif now.tzinfo is not None:
+        # Nếu có múi giờ (ví dụ UTC từ Cloud server), chuyển đổi chính xác sang giờ Việt Nam
+        now = now.astimezone(VIETNAM_TZ)
+    else:
+        # Naive datetime: giả định theo giờ Việt Nam
+        now = now.replace(tzinfo=VIETNAM_TZ)
 
     if not MARKET_SCHEDULE_CONFIG.get("enable_time_filter", True):
         return {
             "is_trading": True,
             "session_name": "Chế độ mô phỏng liên tục",
             "can_fetch_stocks": True,
-            "detail": "Bỏ qua bộ lọc giờ (Chạy 24/7)"
+            "detail": "Bỏ qua bộ lọc giờ (Chạy 24/7)",
+            "current_time": now.strftime("%H:%M:%S")
         }
 
     # Thứ 2 = 0, Chủ Nhật = 6
@@ -132,7 +149,8 @@ def get_market_trading_status(now: datetime = None) -> dict:
             "is_trading": False,
             "session_name": "Đóng cửa (Cuối tuần)",
             "can_fetch_stocks": False,
-            "detail": "Thị trường đóng cửa thứ Bảy & Chủ Nhật. Sử dụng dữ liệu chốt phiên gần nhất."
+            "detail": "Thị trường đóng cửa thứ Bảy & Chủ Nhật. Sử dụng dữ liệu chốt phiên gần nhất.",
+            "current_time": now.strftime("%H:%M:%S")
         }
 
     current_time_str = now.strftime("%H:%M")
@@ -146,28 +164,32 @@ def get_market_trading_status(now: datetime = None) -> dict:
             "is_trading": True,
             "session_name": "Phiên Sáng (Đang giao dịch)",
             "can_fetch_stocks": True,
-            "detail": f"Khớp lệnh liên tục ({start_t} - {lunch_start_t})"
+            "detail": f"Khớp lệnh liên tục ({start_t} - {lunch_start_t})",
+            "current_time": now.strftime("%H:%M:%S")
         }
     elif lunch_start_t <= current_time_str < lunch_end_t:
         return {
             "is_trading": False,
             "session_name": "Tạm nghỉ trưa",
             "can_fetch_stocks": False,
-            "detail": f"Thị trường nghỉ trưa ({lunch_start_t} - {lunch_end_t}). Bảo lưu giá phiên sáng."
+            "detail": f"Thị trường nghỉ trưa ({lunch_start_t} - {lunch_end_t}). Bảo lưu giá phiên sáng.",
+            "current_time": now.strftime("%H:%M:%S")
         }
     elif lunch_end_t <= current_time_str <= end_t:
         return {
             "is_trading": True,
             "session_name": "Phiên Chiều (Đang giao dịch)",
             "can_fetch_stocks": True,
-            "detail": f"Khớp lệnh liên tục & ATC ({lunch_end_t} - {end_t})"
+            "detail": f"Khớp lệnh liên tục & ATC ({lunch_end_t} - {end_t})",
+            "current_time": now.strftime("%H:%M:%S")
         }
     else:
         return {
             "is_trading": False,
             "session_name": "Đã đóng phiên",
             "can_fetch_stocks": False,
-            "detail": f"Ngoài giờ giao dịch ({end_t} - {start_t} hôm sau). Sử dụng dữ liệu chốt phiên."
+            "detail": f"Ngoài giờ giao dịch ({end_t} - {start_t} hôm sau). Sử dụng dữ liệu chốt phiên.",
+            "current_time": now.strftime("%H:%M:%S")
         }
 
 
