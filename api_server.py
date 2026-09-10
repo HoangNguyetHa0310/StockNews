@@ -254,6 +254,17 @@ def get_market_recommendation_report():
     }
 
 
+@app.post("/api/market/refresh", tags=["Thị trường"])
+def post_refresh_market():
+    """Kích hoạt làm mới và tính toán lại dữ liệu từ cache."""
+    _refresh_calculations(force_update_api=False)
+    return {
+        "status": "success",
+        "message": "Đã làm mới và tính toán lại dữ liệu thành công",
+        "last_updated": STATE["last_updated"]
+    }
+
+
 @app.get("/api/config/auto-refresh", tags=["Cấu hình"])
 def get_auto_refresh_config():
     """Lấy thông số chu kỳ tự động làm mới ngầm được định nghĩa trong config.py."""

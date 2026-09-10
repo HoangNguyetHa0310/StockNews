@@ -11,14 +11,14 @@ from pathlib import Path
 from datetime import datetime
 from config import VN30_TICKERS, DATA_DIR, DEFAULT_START_DATE, TODAY_DATE
 
-# Bảng giá tham chiếu thực tế gần đây của các mã VN30 (nghìn đồng)
+# Bảng giá tham chiếu thực tế chuẩn xác của các mã VN30 (nghìn đồng)
 BASE_PRICES = {
-    "ACB": 24.8, "BCM": 68.2, "BID": 48.5, "BVH": 42.1, "CTG": 35.6,
-    "FPT": 72.4, "GAS": 74.5, "GVR": 33.8, "HDB": 26.8, "HPG": 22.05,
-    "MBB": 24.2, "MSN": 74.6, "MWG": 71.6, "PLX": 41.5, "POW": 12.3,
-    "SAB": 56.8, "SHB": 11.5, "SSB": 17.2, "SSI": 32.8, "STB": 32.5,
-    "TCB": 32.4, "TPB": 17.8, "VCB": 58.7, "VHM": 41.2, "VIB": 21.3,
-    "VIC": 42.5, "VJC": 104.2, "VNM": 68.5, "VPB": 19.6, "VRE": 19.8
+    "ACB": 22.45, "BCM": 40.6,  "BID": 36.15, "BVH": 63.1,  "CTG": 30.6,
+    "FPT": 73.5,  "GAS": 86.3,  "GVR": 31.65, "HDB": 27.1,  "HPG": 21.95,
+    "MBB": 20.1,  "MSN": 68.6,  "MWG": 71.6,  "PLX": 35.85, "POW": 12.8,
+    "SAB": 44.8,  "SHB": 11.65, "SSB": 17.85, "SSI": 20.75, "STB": 78.7,
+    "TCB": 32.25, "TPB": 14.45, "VCB": 58.8,  "VHM": 70.2,  "VIB": 13.7,
+    "VIC": 245.0, "VJC": 124.4, "VNM": 61.4,  "VPB": 27.35, "VRE": 25.85
 }
 
 def populate_cache():

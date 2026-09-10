@@ -118,6 +118,61 @@
           <div ref="chartContainer" class="w-full h-64 sm:h-80 rounded-xl overflow-hidden"></div>
         </div>
 
+        <!-- Section: Lý Do Khuyến Nghị & Phân Tích Vì Sao Nên Mua / Bán / Giữ -->
+        <div class="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-theme-subtle border border-theme-border space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs sm:text-sm font-bold text-theme-text flex items-center gap-2">
+              <Sparkles class="w-4 h-4 text-amber-500" />
+              <span>Lý Do Khuyến Nghị & Động Lực Giá</span>
+            </h4>
+            <span 
+              class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full"
+              :class="stock?.signal?.includes('MUA') ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : (stock?.signal?.includes('BÁN') ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30' : 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30')"
+            >
+              {{ stock?.signal || 'THEO DÕI' }}
+            </span>
+          </div>
+
+          <!-- Main Recommendation Reason -->
+          <div class="p-3 sm:p-3.5 rounded-xl bg-theme-card border border-theme-border text-xs leading-relaxed space-y-1">
+            <span class="font-bold text-cyan-600 dark:text-cyan-400 block text-[11px] uppercase tracking-wider">
+              Tại sao nên {{ stock?.signal?.includes('MUA') ? 'MUA' : (stock?.signal?.includes('BÁN') ? 'BÁN' : 'NẮM GIỮ / QUAN SÁT') }} mã này?
+            </span>
+            <p class="text-theme-text font-medium leading-relaxed">
+              {{ stock?.recommendation_reason || 'Đang phân tích định lượng và cập nhật dữ liệu kỹ thuật...' }}
+            </p>
+          </div>
+
+          <!-- Drivers & Risk Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
+            <!-- Động lực tăng trưởng / Động lực giá -->
+            <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 text-[11px]">
+                <TrendingUp class="w-3.5 h-3.5" /> Động Lực Tăng Trưởng:
+              </span>
+              <p class="text-theme-sub leading-relaxed">
+                {{ stock?.growth_driver || stock?.why_price_changes || 'Doanh nghiệp sở hữu vị thế đầu ngành với nền tảng cơ bản và dòng tiền ổn định.' }}
+              </p>
+            </div>
+
+            <!-- Yếu tố rủi ro -->
+            <div class="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1">
+              <span class="font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 text-[11px]">
+                <AlertTriangle class="w-3.5 h-3.5" /> Yếu Tố Rủi Ro Cần Lưu Ý:
+              </span>
+              <p class="text-theme-sub leading-relaxed">
+                {{ stock?.risk_factor || 'Biến động theo xu hướng chung của thị trường và ngưỡng cắt lỗ kỹ thuật đã đề ra.' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Tin tức & vĩ mô tác động -->
+          <div v-if="stock?.news_impact" class="p-3 rounded-xl bg-theme-card/60 border border-theme-border text-[11px] text-theme-sub flex items-start gap-2">
+            <Info class="w-3.5 h-3.5 text-cyan-500 shrink-0 mt-0.5" />
+            <p><strong class="text-theme-text">Tin tức / Vĩ mô tác động:</strong> {{ stock?.news_impact }}</p>
+          </div>
+        </div>
+
       </div>
 
       <!-- Modal Footer -->
@@ -136,7 +191,7 @@
 
 <script setup>
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
-import { X, Activity } from 'lucide-vue-next'
+import { X, Activity, Sparkles, TrendingUp, AlertTriangle, Info } from 'lucide-vue-next'
 import { createChart } from 'lightweight-charts'
 import { fetchStockCandles } from '../api'
 
@@ -207,6 +262,8 @@ async function renderChart() {
     timeScale: {
       borderColor: isDark ? '#334155' : '#cbd5e1',
       timeVisible: false,
+      rightOffset: 6,
+      barSpacing: 6,
     },
   })
 
