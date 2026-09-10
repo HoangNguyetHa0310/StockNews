@@ -1,12 +1,12 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
-    style="padding-top: max(1.25rem, env(safe-area-inset-top, 24px)); padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 24px));"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    style="padding-top: max(1.25rem, env(safe-area-inset-top, 24px)); padding-bottom: max(3rem, calc(3rem + env(safe-area-inset-bottom, 24px)));"
     @click.self="$emit('close')"
   >
     <div 
-      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-7xl max-h-[calc(100dvh-3rem)] sm:max-h-[92vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
+      class="bg-theme-card border border-theme-border rounded-2xl sm:rounded-3xl w-full max-w-7xl max-h-[calc(100dvh-5rem)] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transition-colors duration-200 my-auto text-theme-text"
     >
       <!-- ==================== MODAL HEADER ==================== -->
       <div class="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
@@ -600,7 +600,7 @@
       </div>
 
       <!-- ==================== MODAL FOOTER ==================== -->
-      <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div class="px-4 sm:px-6 py-3 border-t border-theme-border bg-theme-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div class="text-theme-muted text-[11px] font-mono text-center sm:text-left">
           <span>Tổng số mã VN30: <strong>{{ allStocksCount }}</strong> cổ phiếu</span>
           <span class="mx-2">•</span>
@@ -609,9 +609,9 @@
 
         <button 
           @click="$emit('close')"
-          class="w-full sm:w-auto min-w-[200px] py-2.5 px-6 rounded-xl sm:rounded-2xl bg-slate-200/90 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold transition text-sm shadow-md active:scale-95 flex items-center justify-center gap-2 border border-theme-border"
+          class="w-auto px-7 py-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold transition text-xs shadow-sm hover:shadow active:scale-95 flex items-center justify-center gap-1.5 border border-theme-border"
         >
-          <X class="w-4 h-4 text-slate-500 dark:text-slate-400" />
+          <X class="w-3.5 h-3.5 text-slate-400" />
           <span>Đóng Cửa Sổ</span>
         </button>
       </div>

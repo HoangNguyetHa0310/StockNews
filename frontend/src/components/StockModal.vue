@@ -1,11 +1,11 @@
 <template>
   <div 
     v-if="isOpen" 
-    class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
-    style="padding-top: max(1rem, env(safe-area-inset-top, 24px)); padding-bottom: max(1rem, env(safe-area-inset-bottom, 24px));"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-theme-backdrop backdrop-blur-md animate-fade-in overflow-y-auto"
+    style="padding-top: max(1.25rem, env(safe-area-inset-top, 24px)); padding-bottom: max(3rem, calc(3rem + env(safe-area-inset-bottom, 24px)));"
     @click.self="$emit('close')"
   >
-    <div class="relative w-full max-w-5xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[92vh] bg-theme-card border border-theme-border text-theme-text rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200 my-auto">
+    <div class="relative w-full max-w-5xl max-h-[calc(100dvh-5rem)] sm:max-h-[90vh] bg-theme-card border border-theme-border text-theme-text rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-colors duration-200 my-auto">
       
       <!-- Modal Header -->
       <div class="p-4 sm:p-6 border-b border-theme-border flex items-center justify-between bg-theme-subtle">
@@ -192,13 +192,13 @@
 
       </div>
 
-      <!-- Modal Footer (Nút Đóng đưa ra giữa và phóng to rõ ràng theo yêu cầu người dùng) -->
-      <div class="p-3.5 sm:p-4 border-t border-theme-border bg-theme-subtle flex justify-center items-center">
+      <!-- Modal Footer (Nút Đóng thon gọn, căn giữa và cách lề đáy thoáng đãng) -->
+      <div class="py-3 px-4 border-t border-theme-border bg-theme-subtle flex justify-center items-center">
         <button 
           @click="$emit('close')" 
-          class="w-full sm:w-auto min-w-[220px] sm:min-w-[280px] py-2.5 sm:py-3 px-8 rounded-xl sm:rounded-2xl bg-slate-200/90 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm sm:text-base font-bold transition shadow-md active:scale-95 flex items-center justify-center gap-2 border border-theme-border"
+          class="w-auto px-8 py-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all duration-150 shadow-sm hover:shadow active:scale-95 flex items-center justify-center gap-1.5 border border-theme-border"
         >
-          <X class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 dark:text-slate-400" />
+          <X class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
           <span>Đóng Cửa Sổ</span>
         </button>
       </div>
