@@ -433,34 +433,61 @@ def get_news_feed(
     search: Optional[str] = Query(None, description="Tìm kiếm từ khóa tin tức")
 ):
     """Lấy danh sách tin tức tài chính thị trường mới nhất trong nước và quốc tế."""
-    items = NEWS_SERVICE.get_market_news(region=region, asset=asset, search=search)
-    return {
-        "status": "success",
-        "count": len(items),
-        "data": items,
-        "last_updated": get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+    try:
+        items = NEWS_SERVICE.get_market_news(region=region, asset=asset, search=search)
+        return {
+            "status": "success",
+            "count": len(items),
+            "data": items,
+            "last_updated": get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    except Exception as e:
+        print(f"[API Server] Lỗi /api/news/feed: {e}")
+        fallback_items = NEWS_SERVICE._get_fallback_news()
+        return {
+            "status": "success",
+            "count": len(fallback_items),
+            "data": fallback_items,
+            "last_updated": get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
+        }
 
 
 @app.get("/api/news/risk-assessment", tags=["Đánh Giá Rủi Ro"])
 def get_news_risk_assessment():
     """Lấy báo cáo phân tích và đánh giá rủi ro thị trường từ các biến số tin tức vĩ mô/địa chính trị."""
-    report = NEWS_SERVICE.get_risk_assessment_report(state=STATE, flow_service=MARKET_FLOW_SERVICE)
-    return {
-        "status": "success",
-        "data": report
-    }
+    try:
+        report = NEWS_SERVICE.get_risk_assessment_report(state=STATE, flow_service=MARKET_FLOW_SERVICE)
+        return {
+            "status": "success",
+            "data": report
+        }
+    except Exception as e:
+        print(f"[API Server] Lỗi /api/news/risk-assessment: {e}")
+        fallback_report = NEWS_SERVICE.get_risk_assessment_report(state=None, flow_service=None)
+        return {
+            "status": "success",
+            "data": fallback_report
+        }
 
 
 @app.get("/api/news/hot-movers", tags=["Cổ Phiếu Tăng Nóng & Giải Mã"])
 def get_hot_movers():
     """Danh sách cổ phiếu tăng nóng trong phiên và giải mã nguyên nhân / tin tức kích hoạt."""
-    movers = NEWS_SERVICE.get_hot_movers(state=STATE)
-    return {
-        "status": "success",
-        "count": len(movers),
-        "data": movers
-    }
+    try:
+        movers = NEWS_SERVICE.get_hot_movers(state=STATE)
+        return {
+            "status": "success",
+            "count": len(movers),
+            "data": movers
+        }
+    except Exception as e:
+        print(f"[API Server] Lỗi /api/news/hot-movers: {e}")
+        fallback_movers = NEWS_SERVICE.get_hot_movers(state=None)
+        return {
+            "status": "success",
+            "count": len(fallback_movers),
+            "data": fallback_movers
+        }
 
 
 # ==================== PHỤC VỤ GIAO DIỆN TĨNH VUE 3 (ALL-IN-ONE SPA) ====================

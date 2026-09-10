@@ -351,7 +351,9 @@ class NewsService:
 
     def _classify_article(self, item: Dict) -> Dict:
         """Tự động phân loại tài sản, tag, đánh giá sắc thái và phân tích tác động cổ phiếu chuyên sâu."""
-        text = (item["title"] + " " + item["summary"]).lower()
+        title_str = str(item.get("title") or "")
+        summary_str = str(item.get("summary") or "")
+        text = f"{title_str} {summary_str}".lower()
 
         # 1. Phân vùng trong nước / quốc tế
         region = item.get("region", "domestic")
@@ -362,7 +364,7 @@ class NewsService:
         region_label = "Trong Nước" if region == "domestic" else "Quốc Tế"
 
         # 2. Phân tích tác động cổ phiếu & cơ chế tại sao
-        impact_info = self._analyze_impact(text, item["title"], item["summary"], region)
+        impact_info = self._analyze_impact(text, title_str, summary_str, region)
 
         # 3. Đánh giá sắc thái (Sentiment)
         if impact_info.get("sentiment_override"):
@@ -580,7 +582,10 @@ class NewsService:
 
         # Luôn tự động làm giàu (auto-enrich) để mọi tin trong cache đều có kết luận tác động cổ phiếu cụ thể
         for i, it in enumerate(self.cached_news):
-            if not it.get("affected_stocks") or it.get("affected_stocks") == "Không rõ" or not it.get("impact_reason") or "Tích Cực" not in it.get("sentiment_label", "") and ("fpt" in (it.get("title","") + it.get("summary","")).lower() and "171 triệu" in (it.get("title","") + it.get("summary","")).lower()):
+            t_title = str(it.get("title") or "")
+            t_summary = str(it.get("summary") or "")
+            t_combined = f"{t_title} {t_summary}".lower()
+            if not it.get("affected_stocks") or it.get("affected_stocks") == "Không rõ" or not it.get("impact_reason") or ("Tích Cực" not in str(it.get("sentiment_label") or "") and ("fpt" in t_combined and "171 triệu" in t_combined)):
                 re_classified = self._classify_article(it)
                 self.cached_news[i].update(re_classified)
 
@@ -619,14 +624,14 @@ class NewsService:
 
         # Lọc theo vùng miền (trong nước / quốc tế)
         if region:
-            result_items = [n for n in result_items if n["region"] == region.lower()]
+            result_items = [n for n in result_items if n.get("region") == region.lower()]
 
         # Lọc theo loại tài sản (stocks, gold, btc, politics, macro)
         if asset:
             a_lower = asset.lower()
             result_items = [
                 n for n in result_items
-                if n["asset_category"] == a_lower or any(a_lower in t.lower() for t in n.get("asset_tags", []))
+                if n.get("asset_category") == a_lower or any(a_lower in str(t).lower() for t in n.get("asset_tags", []))
             ]
 
         # Tìm kiếm theo từ khóa
@@ -634,7 +639,7 @@ class NewsService:
             q = search.lower().strip()
             result_items = [
                 n for n in result_items
-                if q in n["title"].lower() or q in n["summary"].lower() or any(q in t.lower() for t in n.get("asset_tags", []))
+                if q in str(n.get("title") or "").lower() or q in str(n.get("summary") or "").lower() or any(q in str(t).lower() for t in n.get("asset_tags", []))
             ]
 
         return result_items
@@ -706,67 +711,117 @@ class NewsService:
         ]
 
         real_analyses = {}
-        if state:
+        if state and isinstance(state, dict):
             for s in state.get("stock_analyses", []):
-                t = s.get("ticker", "").upper()
-                if t:
-                    real_analyses[t] = s
+                if isinstance(s, dict):
+                    t = str(s.get("ticker", "")).upper()
+                    if t:
+                        real_analyses[t] = s
 
         cached_articles = self.cached_news or []
 
         results = []
         for item in curated_movers:
-            t = item["ticker"]
-            real = real_analyses.get(t, {})
-            
-            if real:
-                price = real.get("close", item["default_price"])
-                chg = real.get("change_pct", item["default_change"])
-                if abs(chg) < 0.01:
-                    chg = item["default_change"]
-                vol = real.get("volume", 0)
-                vol_str = f"{round(vol / 1e6, 2)}M cp" if vol > 0 else item["volume_str"]
-                vol_ratio = f"{real.get('vol_vs_ma20', 2.0)}x MA20"
-            else:
+            try:
+                t = item["ticker"]
+                real = real_analyses.get(t, {})
+                
+                # Giá và biến động mặc định
                 price = item["default_price"]
                 chg = item["default_change"]
                 vol_str = item["volume_str"]
                 vol_ratio = item["vol_ratio"]
 
-            matching_news = None
-            for art in cached_articles:
-                t_lower = t.lower()
-                art_text = (art.get("title", "") + " " + art.get("summary", "")).lower()
-                if t_lower in art_text or item["company_name"].lower() in art_text:
-                    matching_news = art
-                    break
+                if real and isinstance(real, dict):
+                    p_val = real.get("close")
+                    if p_val is not None:
+                        try:
+                            price = float(p_val)
+                        except (ValueError, TypeError):
+                            pass
 
-            cat_title = matching_news.get("title") if matching_news else item["catalyst_title"]
-            cat_summary = matching_news.get("summary") if matching_news else item["catalyst_summary"]
-            cat_url = matching_news.get("url", "") if matching_news else ""
+                    c_val = real.get("change_pct")
+                    if c_val is not None:
+                        try:
+                            c_float = float(c_val)
+                            if abs(c_float) >= 0.01:
+                                chg = c_float
+                        except (ValueError, TypeError):
+                            pass
 
-            is_ceiling = (chg >= 6.8)
+                    vol_val = real.get("volume")
+                    if vol_val is not None:
+                        try:
+                            vol_float = float(vol_val)
+                            if vol_float > 0:
+                                vol_str = f"{round(vol_float / 1e6, 2)}M cp"
+                        except (ValueError, TypeError):
+                            pass
 
-            results.append({
-                "ticker": t,
-                "company_name": item["company_name"],
-                "price": price,
-                "change_pct": round(chg, 2),
-                "is_ceiling": is_ceiling,
-                "status_badge": "KỊCH TRẦN +7%" if is_ceiling else (f"+{round(chg, 2)}% TĂNG MẠNH" if chg >= 3.5 else f"+{round(chg, 2)}% TĂNG TỐC"),
-                "badge_color": "purple" if is_ceiling else "emerald",
-                "volume_str": vol_str,
-                "vol_ratio": vol_ratio,
-                "catalyst_title": cat_title,
-                "catalyst_summary": cat_summary,
-                "catalyst_url": cat_url,
-                "surge_reason": item["surge_reason"],
-                "flow_status": item["flow_status"],
-                "tag": item["tag"],
-                "actionable_insight": item["actionable_insight"]
-            })
+                    vr_val = real.get("vol_vs_ma20")
+                    if vr_val is not None:
+                        vol_ratio = f"{vr_val}x MA20"
 
-        results.sort(key=lambda x: x["change_pct"], reverse=True)
+                # Tìm kiếm bài báo liên quan an toàn tuyệt đối
+                matching_news = None
+                for art in cached_articles:
+                    if not isinstance(art, dict):
+                        continue
+                    t_lower = t.lower()
+                    art_title = str(art.get("title") or "")
+                    art_summary = str(art.get("summary") or "")
+                    art_text = f"{art_title} {art_summary}".lower()
+                    if t_lower in art_text or item["company_name"].lower() in art_text:
+                        matching_news = art
+                        break
+
+                cat_title = str(matching_news.get("title") or item["catalyst_title"]) if matching_news else item["catalyst_title"]
+                cat_summary = str(matching_news.get("summary") or item["catalyst_summary"]) if matching_news else item["catalyst_summary"]
+                cat_url = str(matching_news.get("url") or "") if matching_news else ""
+
+                is_ceiling = bool(chg >= 6.8)
+
+                results.append({
+                    "ticker": t,
+                    "company_name": item["company_name"],
+                    "price": price,
+                    "change_pct": round(chg, 2),
+                    "is_ceiling": is_ceiling,
+                    "status_badge": "KỊCH TRẦN +7%" if is_ceiling else (f"+{round(chg, 2)}% TĂNG MẠNH" if chg >= 3.5 else f"+{round(chg, 2)}% TĂNG TỐC"),
+                    "badge_color": "purple" if is_ceiling else "emerald",
+                    "volume_str": vol_str,
+                    "vol_ratio": vol_ratio,
+                    "catalyst_title": cat_title,
+                    "catalyst_summary": cat_summary,
+                    "catalyst_url": cat_url,
+                    "surge_reason": item["surge_reason"],
+                    "flow_status": item["flow_status"],
+                    "tag": item["tag"],
+                    "actionable_insight": item["actionable_insight"]
+                })
+            except Exception as e:
+                print(f"[NewsService] Lỗi xử lý mover {item.get('ticker')}: {e}")
+                # Fallback item an toàn
+                results.append({
+                    "ticker": item["ticker"],
+                    "company_name": item["company_name"],
+                    "price": item["default_price"],
+                    "change_pct": item["default_change"],
+                    "is_ceiling": False,
+                    "status_badge": f"+{item['default_change']}% TĂNG MẠNH",
+                    "badge_color": "emerald",
+                    "volume_str": item["volume_str"],
+                    "vol_ratio": item["vol_ratio"],
+                    "catalyst_title": item["catalyst_title"],
+                    "catalyst_summary": item["catalyst_summary"],
+                    "catalyst_url": "",
+                    "surge_reason": item["surge_reason"],
+                    "flow_status": item["flow_status"],
+                    "tag": item["tag"],
+                    "actionable_insight": item["actionable_insight"]
+                })
+
+        results.sort(key=lambda x: x.get("change_pct", 0), reverse=True)
         return results
 
     def get_risk_assessment_report(self, state: Optional[Dict] = None, flow_service=None) -> Dict:
