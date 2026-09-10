@@ -42,14 +42,16 @@
             class="px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
             :class="selectedRegion === 'domestic' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
           >
-            🇻🇳 Trong Nước
+            <MapPin class="w-3.5 h-3.5 text-rose-500" />
+            <span>Trong Nước</span>
           </button>
           <button 
             @click="setRegion('international')" 
             class="px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
             :class="selectedRegion === 'international' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
           >
-            🌐 Quốc Tế
+            <Globe class="w-3.5 h-3.5 text-cyan-500" />
+            <span>Quốc Tế</span>
           </button>
         </div>
 
@@ -128,10 +130,12 @@
             <div class="flex items-center gap-1.5">
               <!-- Region badge -->
               <span 
-                class="px-2 py-0.5 rounded-md font-bold whitespace-nowrap shrink-0"
+                class="px-2 py-0.5 rounded-md font-bold whitespace-nowrap shrink-0 flex items-center gap-1"
                 :class="item.region === 'domestic' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'"
               >
-                {{ item.region === 'domestic' ? '🇻🇳 Trong Nước' : '🌐 Quốc Tế' }}
+                <MapPin v-if="item.region === 'domestic'" class="w-3 h-3 text-rose-500" />
+                <Globe v-else class="w-3 h-3 text-blue-500" />
+                <span>{{ item.region === 'domestic' ? 'Trong Nước' : 'Quốc Tế' }}</span>
               </span>
 
               <!-- Source -->
@@ -209,7 +213,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Clock, Search, ExternalLink } from 'lucide-vue-next'
+import { Clock, Search, ExternalLink, MapPin, Globe } from 'lucide-vue-next'
 import { fetchNewsFeed } from '../api'
 
 const newsList = ref([])

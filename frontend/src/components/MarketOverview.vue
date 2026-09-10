@@ -68,7 +68,7 @@
     <div 
       @click="$emit('open-flow-report')"
       class="p-5 rounded-2xl bg-theme-card border border-theme-border shadow-sm relative overflow-hidden backdrop-blur-sm transition-all duration-200 cursor-pointer hover:border-cyan-500/70 hover:shadow-lg hover:shadow-cyan-500/5 group flex flex-col justify-between"
-      title="Bấm để xem danh sách 30 mã VN30, khối lượng Mua/Bán (Hôm nay, 1 tuần, 1 tháng) của Khối Ngoại & Trong Nước"
+      title="Bấm để xem danh sách 30 mã VN30, khối lượng Mua/Bán của Khối Ngoại & Trong Nước"
     >
       <div>
         <!-- Clean Header Row: Title & Interactive Badge with Icon -->
@@ -82,29 +82,37 @@
           </span>
         </div>
         
-        <!-- Tóm tắt khối lượng Mua & Bán trong phiên (Triệu cổ phiếu) -->
-        <div class="mt-1 space-y-1 font-mono text-xs">
-          <div class="flex items-center justify-between">
-            <span class="text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Ngoại:
-            </span>
-            <span class="text-theme-sub text-[11px]">
-              Mua <strong class="text-emerald-500">{{ formatNumber(foreignBuy) }}M</strong> &bull; Bán <strong class="text-rose-500">{{ formatNumber(foreignSell) }}M</strong>
-            </span>
+        <!-- Giá trị Mua/Bán Ròng Khối Ngoại & Trong Nước -->
+        <div class="mt-1 flex items-baseline justify-between">
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-semibold text-theme-muted">Khối Ngoại</p>
+            <h3 
+              class="text-xl sm:text-2xl font-bold font-mono mt-0.5"
+              :class="foreignNet >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'"
+            >
+              {{ foreignNet >= 0 ? '+' : '' }}{{ formatNumber(foreignNet) }}M
+            </h3>
           </div>
-          <div class="flex items-center justify-between">
-            <span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Nội:
-            </span>
-            <span class="text-theme-sub text-[11px]">
-              Mua <strong class="text-emerald-500">{{ formatNumber(domesticBuy) }}M</strong> &bull; Bán <strong class="text-rose-500">{{ formatNumber(domesticSell) }}M</strong>
-            </span>
+          <div class="text-right">
+            <p class="text-[10px] uppercase tracking-wider font-semibold text-theme-muted">Trong Nước</p>
+            <h3 
+              class="text-xl sm:text-2xl font-bold font-mono mt-0.5"
+              :class="domesticNet >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'"
+            >
+              {{ domesticNet >= 0 ? '+' : '' }}{{ formatNumber(domesticNet) }}M
+            </h3>
           </div>
+        </div>
+
+        <!-- Tóm tắt chi tiết Mua/Bán -->
+        <div class="text-[11px] text-theme-sub font-mono mt-1.5 flex items-center justify-between border-t border-theme-border/50 pt-1.5">
+          <span>Mua {{ formatNumber(foreignBuy) }}M / Bán {{ formatNumber(foreignSell) }}M</span>
+          <span>Mua {{ formatNumber(domesticBuy) }}M / Bán {{ formatNumber(domesticSell) }}M</span>
         </div>
       </div>
 
       <div class="mt-4 pt-3 border-t border-theme-border flex items-center justify-between text-xs text-theme-sub font-mono">
-        <span>Hôm nay &bull; 1 tuần &bull; 1 tháng:</span>
+        <span>Dòng tiền VN30:</span>
         <span class="font-bold text-cyan-600 dark:text-cyan-400 group-hover:underline">Báo cáo 30 mã &rarr;</span>
       </div>
     </div>
@@ -133,29 +141,26 @@
       </div>
     </div>
 
-    <!-- Market Trading Session Banner (Hiển thị quy chế hoạt động thông minh: 9h-15h cho Cổ phiếu, 24/7 cho Tin tức & Rủi ro) -->
+    <!-- Market Trading Session Banner (Hiển thị trạng thái phiên sạch sẽ, gọn gàng) -->
     <div 
       v-if="marketData?.market_schedule"
-      class="col-span-1 sm:col-span-2 lg:col-span-4 px-4 py-2.5 rounded-2xl bg-theme-card border border-theme-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+      class="col-span-1 sm:col-span-2 lg:col-span-4 px-4 py-3 rounded-2xl bg-theme-card border border-theme-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs transition-colors duration-200"
     >
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 min-w-0">
         <span 
           class="w-2.5 h-2.5 rounded-full shrink-0"
-          :class="marketData.market_schedule.is_trading ? 'bg-emerald-500 animate-ping' : 'bg-theme-muted'"
+          :class="marketData.market_schedule.is_trading ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'"
         ></span>
-        <span class="font-bold text-theme-text">
+        <span class="font-bold text-theme-text whitespace-nowrap">
           {{ marketData.market_schedule.session_name }}:
         </span>
-        <span class="text-theme-sub">
+        <span class="text-theme-sub truncate">
           {{ marketData.market_schedule.detail }}
         </span>
       </div>
-      <div class="flex items-center gap-3 text-[11px] font-mono text-theme-muted shrink-0">
-        <span class="flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Tin tức & Rủi ro: <strong>24/7 Live</strong>
-        </span>
-        <span>•</span>
-        <span>Tối ưu tải API: <strong>Đang bật</strong></span>
+      <div class="flex items-center gap-2 text-[11px] font-mono text-cyan-600 dark:text-cyan-400 shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+        <span>Tin tức & Rủi ro: <strong>24/7 Realtime</strong></span>
       </div>
     </div>
   </section>
@@ -214,6 +219,9 @@ const domesticSell = computed(() => {
   }
   return 236.75
 })
+
+const foreignNet = computed(() => foreignBuy.value - foreignSell.value)
+const domesticNet = computed(() => domesticBuy.value - domesticSell.value)
 
 function formatNumber(val) {
   if (val === undefined || val === null || isNaN(val)) return '--'

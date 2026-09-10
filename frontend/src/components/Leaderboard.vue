@@ -3,35 +3,38 @@
     <!-- Toolbar: Filter Tabs & Search Bar -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-theme-card p-3 sm:p-4 rounded-2xl border border-theme-border shadow-sm transition-colors duration-200">
       
-      <!-- Filter Tabs -->
-      <div class="flex flex-wrap gap-1.5 sm:gap-2">
+      <!-- Filter Tabs (Grid 4 cột trên mobile để tránh rớt dòng đơn lẻ, Flex trên desktop) -->
+      <div class="grid grid-cols-4 gap-1.5 sm:flex sm:flex-wrap sm:gap-2 w-full md:w-auto">
         <button 
           @click="setFilter('ALL')" 
-          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition"
+          class="px-2 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center justify-center text-center whitespace-nowrap"
           :class="activeFilter === 'ALL' ? 'bg-cyan-500 text-slate-950 shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Tất cả ({{ stocks.length }})
+          <span>Tất cả ({{ stocks.length }})</span>
         </button>
         <button 
           @click="setFilter('BUY')" 
-          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
+          class="px-2 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition flex items-center justify-center text-center whitespace-nowrap"
           :class="activeFilter === 'BUY' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Tín hiệu MUA
+          <span class="sm:hidden">MUA</span>
+          <span class="hidden sm:inline">Tín hiệu MUA</span>
         </button>
         <button 
           @click="setFilter('HOLD')" 
-          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
+          class="px-2 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition flex items-center justify-center text-center whitespace-nowrap"
           :class="activeFilter === 'HOLD' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Nắm giữ / Chờ
+          <span class="sm:hidden">Nắm giữ</span>
+          <span class="hidden sm:inline">Nắm giữ / Chờ</span>
         </button>
         <button 
           @click="setFilter('SELL')" 
-          class="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition"
+          class="px-2 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition flex items-center justify-center text-center whitespace-nowrap"
           :class="activeFilter === 'SELL' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' : 'bg-theme-subtle text-theme-sub hover:bg-theme-subtle-2 hover:text-theme-text'"
         >
-          Cảnh báo BÁN
+          <span class="sm:hidden">BÁN</span>
+          <span class="hidden sm:inline">Cảnh báo BÁN</span>
         </button>
       </div>
 
