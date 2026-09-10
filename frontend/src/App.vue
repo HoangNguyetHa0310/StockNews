@@ -15,8 +15,6 @@
         :market-data="marketData" 
         :countdown="countdown"
         :refresh-interval="refreshInterval"
-        :is-refreshing="isRefreshingManual"
-        @refresh="handleManualRefresh"
       />
 
       <!-- Main Content Area: Rộng rãi, tối ưu khoảng đệm mobile & desktop -->

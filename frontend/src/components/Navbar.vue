@@ -47,18 +47,6 @@
         </div>
 
 
-        <!-- Manual Refresh Button (Làm mới toàn trang như Ctrl + Shift + R) -->
-        <button 
-          @click="$emit('refresh')" 
-          :disabled="isRefreshing"
-          class="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition shadow-sm"
-          :title="`Làm mới toàn bộ dữ liệu tức thì (Ctrl+Shift+R)\nTự động đếm ngược: ${countdown}s`"
-        >
-          <RotateCw class="w-3.5 h-3.5 sm:w-4 sm:h-4" :class="{ 'animate-spin': isRefreshing }" />
-          <span class="hidden sm:inline">Làm mới</span>
-          <span class="font-mono text-[10px] sm:text-[11px] opacity-80">({{ countdown }}s)</span>
-        </button>
-
         <!-- Dark / Light Theme Toggle Button -->
         <button 
           @click="toggleTheme" 
@@ -100,7 +88,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { TrendingUp, ExternalLink, Sun, Moon, RotateCw } from 'lucide-vue-next'
+import { TrendingUp, ExternalLink, Sun, Moon } from 'lucide-vue-next'
 
 defineProps({
   marketData: {
@@ -114,14 +102,8 @@ defineProps({
   refreshInterval: {
     type: Number,
     default: 60
-  },
-  isRefreshing: {
-    type: Boolean,
-    default: false
   }
 })
-
-defineEmits(['refresh'])
 
 // Mặc định chế độ Sáng (Light Mode)
 const isDark = ref(false)
