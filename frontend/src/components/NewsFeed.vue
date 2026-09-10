@@ -1,54 +1,67 @@
 <template>
   <div class="space-y-6 animate-fade-in">
     <!-- Header Banner -->
-    <div class="p-6 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-theme-subtle to-emerald-500/10 border border-theme-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-rose-500/10 text-rose-500 border border-rose-500/30 flex items-center gap-1">
+    <div class="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-cyan-500/10 via-theme-subtle to-emerald-500/10 border border-theme-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+      <div class="space-y-2">
+        <!-- Top Status Badges Row -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-rose-500/10 text-rose-500 border border-rose-500/30 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span> LIVE RADAR
           </span>
           <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
             24/7 REAL-TIME
           </span>
-          <h2 class="text-xl font-bold text-theme-text">Dòng Chảy Tin Tức Thị Trường Tài Chính</h2>
+          <span class="text-[11px] font-mono text-theme-muted ml-auto sm:ml-0 md:hidden flex items-center gap-1">
+            <Clock class="w-3.5 h-3.5 text-cyan-500" />
+            <span>{{ currentTime }}</span>
+          </span>
         </div>
-        <p class="text-xs text-theme-sub mt-1">
-          Cập nhật tức thì các biến số vĩ mô trong nước & thế giới tác động trực tiếp tới Cổ phiếu VN30, Giá Vàng, Bitcoin và Địa chính trị.
+
+        <!-- Main Title -->
+        <h2 class="text-lg sm:text-xl font-bold text-theme-text tracking-tight">
+          Dòng Chảy Tin Tức Thị Trường Tài Chính
+        </h2>
+
+        <!-- Subtitle Description -->
+        <p class="text-xs text-theme-sub leading-relaxed max-w-2xl">
+          Cập nhật tức thì các biến số vĩ mô trong nước & quốc tế tác động trực tiếp tới Cổ phiếu VN30, Giá Vàng, Bitcoin và Địa chính trị.
         </p>
       </div>
 
-      <div class="flex items-center gap-2 text-xs font-mono text-theme-sub">
+      <!-- Desktop Clock -->
+      <div class="hidden md:flex items-center gap-2 text-xs font-mono text-theme-sub shrink-0">
         <Clock class="w-4 h-4 text-cyan-500" />
         <span>Cập nhật: <strong class="text-theme-text">{{ currentTime }}</strong></span>
       </div>
     </div>
 
     <!-- ================= CỔ PHIẾU TĂNG NÓNG TRONG PHIÊN & GIẢI MÃ LÝ DO (HOT MOVERS RADAR) ================= -->
-    <div class="p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-theme-card to-emerald-500/10 border border-amber-500/30 shadow-md space-y-4">
+    <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-500/10 via-theme-card to-emerald-500/10 border border-amber-500/30 shadow-md space-y-4">
       <!-- Section Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-theme-border pb-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 border border-amber-500/30 flex items-center justify-center shrink-0 shadow-sm">
-            <Flame class="w-5 h-5 animate-pulse text-amber-500" />
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-theme-border pb-3">
+        <div class="flex items-start sm:items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 border border-amber-500/30 flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0">
+            <Flame class="w-4 h-4 animate-pulse text-amber-500" />
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h3 class="text-base font-bold text-theme-text flex items-center gap-1.5">
-                <span>Cổ Phiếu Tăng Nóng Trong Phiên</span>
-                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 animate-pulse">
-                  RADAR CATALYST
-                </span>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-theme-text">
+                Cổ Phiếu Tăng Nóng Trong Phiên
               </h3>
+              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                RADAR CATALYST
+              </span>
             </div>
-            <p class="text-xs text-theme-sub mt-0.5">
+            <p class="text-xs text-theme-sub mt-0.5 leading-relaxed">
               Tự động phát hiện các mã tăng giá bứt phá và giải mã chính xác nguyên nhân / tin tức kích hoạt đà tăng.
             </p>
           </div>
         </div>
 
-        <span class="text-[11px] font-mono text-theme-sub flex items-center gap-1">
-          <Sparkles class="w-3.5 h-3.5 text-amber-500" /> Bóc tách dòng tiền & sự kiện
-        </span>
+        <div class="hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-theme-muted shrink-0">
+          <Sparkles class="w-3.5 h-3.5 text-amber-500" />
+          <span>Bóc tách dòng tiền & sự kiện</span>
+        </div>
       </div>
 
       <!-- Hot Movers Grid Cards -->
@@ -65,7 +78,7 @@
         <div 
           v-for="mover in hotMovers" 
           :key="mover.ticker"
-          class="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-theme-border hover:border-amber-500/50 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3 relative overflow-hidden group"
+          class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-theme-border hover:border-amber-500/50 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3 relative overflow-hidden group"
         >
           <!-- Accent Top Bar -->
           <div 
@@ -73,44 +86,56 @@
             :class="mover.is_ceiling ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gradient-to-r from-emerald-500 to-cyan-500'"
           ></div>
 
-          <!-- Mover Header: Ticker, Price, Change Badge -->
-          <div class="flex items-start justify-between gap-3 pt-1">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-lg font-black font-mono text-theme-text group-hover:text-cyan-500 transition-colors">
-                  {{ mover.ticker }}
-                </span>
-                <span class="text-xs text-theme-sub font-medium truncate max-w-[160px] sm:max-w-[210px]">
-                  {{ mover.company_name }}
-                </span>
+          <!-- Mover Header: Ticker, Name, Tag & Status Badge -->
+          <div class="space-y-2.5 pt-1">
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg sm:text-xl font-black font-mono text-theme-text group-hover:text-cyan-500 transition-colors">
+                    {{ mover.ticker }}
+                  </span>
+                  <span class="text-xs text-theme-sub font-medium truncate max-w-[170px] sm:max-w-[220px]">
+                    {{ mover.company_name }}
+                  </span>
+                </div>
               </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono text-theme-muted mt-0.5">
-                <span>Giá: <strong class="text-theme-text font-bold">{{ mover.price }}</strong></span>
-                <span>&bull;</span>
-                <span>KL: <strong class="text-theme-text">{{ mover.volume_str }}</strong></span>
-                <span class="px-1.5 py-0.2 rounded bg-theme-subtle text-[10px] text-cyan-600 dark:text-cyan-400 font-bold border border-theme-border">
-                  {{ mover.vol_ratio }}
-                </span>
-              </div>
-            </div>
 
-            <!-- Status Badge -->
-            <div class="flex flex-col items-end gap-1">
+              <!-- Status Badge -->
               <span 
-                class="px-2.5 py-1 rounded-xl text-xs font-black font-mono shadow-sm flex items-center gap-1"
-                :class="mover.is_ceiling ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/40' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'"
+                class="px-2.5 py-1 rounded-xl text-xs font-black font-mono shadow-sm flex items-center gap-1 shrink-0"
+                :class="mover.is_ceiling ? 'bg-purple-500/15 text-purple-600 dark:text-purple-300 border border-purple-500/30' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'"
               >
                 <TrendingUp class="w-3.5 h-3.5" />
                 {{ mover.status_badge }}
               </span>
-              <span class="text-[10px] font-mono text-amber-500 font-semibold">
+            </div>
+
+            <!-- Tag Highlight Row -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/20">
                 {{ mover.tag }}
               </span>
+            </div>
+
+            <!-- 3-Column Metrics Grid (Ngăn nắp, thoáng mắt, không bao giờ bị vỡ dòng) -->
+            <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-theme-subtle border border-theme-border text-center">
+              <div>
+                <span class="text-[10px] text-theme-muted block font-mono">Giá chốt</span>
+                <span class="text-xs sm:text-sm font-bold font-mono text-theme-text">{{ mover.price }}</span>
+              </div>
+              <div class="border-x border-theme-border/70">
+                <span class="text-[10px] text-theme-muted block font-mono">Khối lượng</span>
+                <span class="text-xs sm:text-sm font-bold font-mono text-theme-text">{{ mover.volume_str }}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-theme-muted block font-mono">Thanh khoản</span>
+                <span class="text-xs sm:text-sm font-bold font-mono text-cyan-600 dark:text-cyan-400">{{ mover.vol_ratio }}</span>
+              </div>
             </div>
           </div>
 
           <!-- Catalyst News (Chất xúc tác tin tức) -->
-          <div class="p-2.5 rounded-xl bg-theme-subtle/70 border border-theme-border text-xs space-y-1">
+          <div class="p-3 rounded-xl bg-theme-subtle/70 border border-theme-border text-xs space-y-1.5">
             <div class="flex items-center gap-1.5 text-[11px] font-bold text-theme-text">
               <Zap class="w-3.5 h-3.5 text-amber-500 shrink-0" />
               <span>Tin tức & Sự kiện kích hoạt:</span>
@@ -124,7 +149,7 @@
           </div>
 
           <!-- Surge Reason Breakdown (Giải mã nguyên nhân tăng mạnh) -->
-          <div class="p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs space-y-1">
+          <div class="p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs space-y-1.5">
             <div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
               <Target class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
               <span>Giải mã lý do tăng nóng:</span>
@@ -135,12 +160,12 @@
           </div>
 
           <!-- Actionable Note -->
-          <div class="flex items-center justify-between gap-2 pt-1 border-t border-theme-border/60 text-[11px]">
-            <span class="text-theme-muted font-mono flex items-center gap-1 truncate text-[10px]">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              {{ mover.flow_status }}
+          <div class="flex items-center justify-between gap-2 pt-2 border-t border-theme-border/60 text-[11px]">
+            <span class="text-theme-muted font-mono flex items-center gap-1.5 truncate text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+              <span class="truncate">{{ mover.flow_status }}</span>
             </span>
-            <span class="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 shrink-0">
+            <span class="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 shrink-0 font-medium">
               {{ mover.actionable_insight.split('.')[0] }}
             </span>
           </div>
