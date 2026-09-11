@@ -117,7 +117,7 @@ SIGNAL_THRESHOLDS = {
 # ==================== CẤU HÌNH API & CACHE ====================
 API_CONFIG = {
     "source": "VCI",
-    "sleep_between_calls": 0.3,   # Giây nghỉ giữa các request để quét nhanh 30 mã mà không chạm rate-limit
+    "sleep_between_calls": 2.0,   # Giây nghỉ giữa các request (2s an toàn cho guest 20 req/phút, 0.5s nếu có API key 60 req/phút)
     "max_retries": 5,
     "retry_wait": 30
 }
@@ -132,8 +132,9 @@ SERVER_CONFIG = {
 # ==================== CẤU HÌNH TỰ ĐỘNG CẬP NHẬT NGẦM (AUTO REFRESH) ====================
 AUTO_REFRESH_CONFIG = {
     "enabled": True,             # Bật/tắt tự động làm mới ngầm
-    "interval_seconds": 60,      # Thời gian tự động làm mới (mặc định 60 giây = 1 phút)
-    "fetch_new_bars": True       # Tự động tải nến phiên mới nhất nếu thị trường đang mở cửa
+    "interval_seconds": 180,     # Thời gian tự động làm mới (180s = 3 phút; giảm áp lực rate-limit)
+    "fetch_new_bars": True,      # Tự động tải nến phiên mới nhất nếu thị trường đang mở cửa
+    "batch_size": 5              # Số mã cổ phiếu quét mỗi chu kỳ (30 mã / 5 = 6 chu kỳ để hoàn tất toàn bộ)
 }
 
 # ==================== CẤU HÌNH KHUNG GIỜ GIAO DỊCH CHỨNG KHOÁN (MARKET SCHEDULE) ====================

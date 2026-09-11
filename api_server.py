@@ -64,7 +64,8 @@ STATE = {
     "processed_stocks": {},
     "vnindex_df": None,
     "last_updated": None,
-    "is_updating": False
+    "is_updating": False,
+    "refresh_batch_index": 0   # Vị trí batch hiện tại trong staggered refresh (0-based)
 }
 
 
@@ -134,34 +135,115 @@ def _refresh_calculations(force_update_api: bool = False):
     STATE["last_updated"] = get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+def _refresh_batch(tickers_batch: list, force_update_api: bool = False):
+    """
+    Cập nhật một batch nhỏ (5 mã) trong chu kỳ staggered refresh.
+    Giải pháp giao đấu với rate-limit: thay vì quét 30 mã một lúc,
+    mỗi 3 phút chỉ quét 5 mã → sau 6 chu kỳ (18 phút) toàn bộ VN30 được cập nhật.
+    """
+    loader = STATE["data_loader"]
+    predictor = STATE["predictor"]
+    analyzer = STATE["analyzer"]
+    vn_raw = STATE.get("vnindex_df")
+
+    new_analyses = list(STATE["stock_analyses"])
+    new_processed = dict(STATE["processed_stocks"])
+
+    for t in tickers_batch:
+        try:
+            raw_df = loader.get_ticker_data(t, force_update=force_update_api)
+            if raw_df is not None and len(raw_df) >= 30:
+                feat_df = add_technical_features(raw_df, vnindex_df=vn_raw)
+                new_processed[t] = feat_df
+                ml_res = predictor.predict_latest(t, feat_df)
+                analysis = analyzer.analyze_ticker(t, feat_df, ml_res)
+                if analysis:
+                    # Cập nhật hoặc thêm mới vào danh sách phân tích
+                    new_analyses = [a for a in new_analyses if a["ticker"] != t]
+                    new_analyses.append(analysis)
+        except Exception as e:
+            print(f"  [Batch Refresh] Lỗi cập nhật {t}: {e}")
+
+    # Cập nhật lại đánh giá thị trường và sắp xếp
+    new_analyses.sort(key=lambda x: x.get("total_score", 0), reverse=True)
+    market_summary = analyzer.analyze_market_regime(vn_raw, new_analyses)
+
+    STATE["processed_stocks"] = new_processed
+    STATE["stock_analyses"] = new_analyses
+    STATE["market_summary"] = market_summary
+    STATE["last_updated"] = get_vietnam_now().strftime("%Y-%m-%d %H:%M:%S")
+
+
 async def auto_refresh_worker():
     """
-    Luồng worker chạy ngầm định kỳ tự động làm mới dữ liệu:
-    - Cổ phiếu VN30: Chỉ tải nến mới từ API trong giờ giao dịch (09:00 - 15:00, Thứ 2 - Thứ 6).
-    - Ngoài giờ giao dịch: Tạm dừng quét API, giữ nguyên dữ liệu chốt phiên để chống quá tải & tránh rate-limit.
+    Staggered Batch Auto-Refresh Worker:
+    - Mỗi chu kỳ (3 phút) chỉ quét 1 batch nhỏ (5 mã) thay vì 30 mã cùng lúc.
+    - Giải quyết giao đấu rate-limit: chỉ cần 5 API calls mỗi chu kỳ (trước: 30+ calls).
+    - Sau 6 chu kỳ (~18 phút), toàn bộ 30 mã VN30 được làm mới đầy đủ 1 vòng.
     - Tin tức & Đánh giá rủi ro: Luôn cập nhật liên tục 24/7 theo thời gian thực.
     """
+    from config import VN30_TICKERS as _ALL_TICKERS
+    batch_size = AUTO_REFRESH_CONFIG.get("batch_size", 5)
+    all_tickers = sorted(_ALL_TICKERS)
+
     while True:
-        interval = AUTO_REFRESH_CONFIG.get("interval_seconds", 60)
+        interval = AUTO_REFRESH_CONFIG.get("interval_seconds", 180)
         await asyncio.sleep(interval)
         if AUTO_REFRESH_CONFIG.get("enabled", True):
             try:
-                # Kiểm tra trạng thái phiên giao dịch chứng khoán
                 market_status = get_market_trading_status()
                 can_fetch_stocks = market_status.get("can_fetch_stocks", False) and AUTO_REFRESH_CONFIG.get("fetch_new_bars", True)
 
+                # Xác định batch hiện tại cần quét
+                batch_idx = STATE["refresh_batch_index"]
+                start = batch_idx * batch_size
+                current_batch = all_tickers[start: start + batch_size]
+
+                if not current_batch:
+                    # Hết vòng → reset và cập nhật VNINDEX
+                    STATE["refresh_batch_index"] = 0
+                    loader = STATE["data_loader"]
+                    vn_raw = loader.get_market_data("VNINDEX", force_update=can_fetch_stocks)
+                    if vn_raw is not None and not vn_raw.empty:
+                        STATE["vnindex_df"] = add_technical_features(vn_raw)
+                    print(f"[Auto-Refresh] ↺ Reset vòng quét VN30 và cập nhật VNINDEX.")
+                    continue
+
                 if can_fetch_stocks:
-                    print(f"\n[Auto-Refresh Worker] 🟢 Đang trong phiên ({market_status['session_name']}). Đang quét nến cổ phiếu mới từ API...")
-                    _refresh_calculations(force_update_api=True)
+                    batch_label = f"Batch {batch_idx + 1} ({', '.join(current_batch)})"
+                    print(f"\n[Auto-Refresh Worker] 🟢 {market_status['session_name']} | {batch_label}...")
+                    _refresh_batch(current_batch, force_update_api=True)
                 else:
                     print(f"\n[Auto-Refresh Worker] ⏸️ {market_status['session_name']}: {market_status['detail']}")
                     print("[Auto-Refresh Worker] 🛡️ Chế độ tiết kiệm tài nguyên: Giữ nguyên dữ liệu chốt phiên, không gọi API ngoài.")
-                    _refresh_calculations(force_update_api=False)
+
+                # Tiến sang batch tiếp theo
+                next_start = start + batch_size
+                STATE["refresh_batch_index"] = 0 if next_start >= len(all_tickers) else batch_idx + 1
 
                 print(f"[Auto-Refresh Worker] 🌐 Tin tức & Đánh giá rủi ro: Cập nhật thời gian thực 24/7.")
                 print(f"[Auto-Refresh Worker] Hoàn tất chu kỳ lúc {STATE['last_updated']}.")
             except Exception as e:
                 print(f"[Auto-Refresh Worker Lỗi]: {e}")
+
+
+async def keep_alive_worker():
+    """
+    Keep-Alive Worker – Ngăn Render.com spin-down sau 15 phút idle:
+    Tự ping endpoint /health mỗi 10 phút để giữ server luôn awake.
+    Hoạt động trước cả khi có user – xử lý cả những lúc 2-3 giờ sáng không ai truy cập.
+    """
+    import httpx
+    await asyncio.sleep(30)  # Chờ server khởi động xong
+    while True:
+        await asyncio.sleep(600)  # 10 phút
+        try:
+            port = int(os.environ.get("PORT", 8000))
+            async with httpx.AsyncClient() as client:
+                r = await client.get(f"http://localhost:{port}/health", timeout=10)
+                print(f"[Keep-Alive] Ping ✓ ({r.status_code}) – Server awake lúc {get_vietnam_now().strftime('%H:%M:%S')}")
+        except Exception as e:
+            print(f"[Keep-Alive] Ping không thành công (server có thể đang khởi động): {e}")
 
 
 @app.on_event("startup")
@@ -170,7 +252,9 @@ async def on_startup():
     initialize_engine()
     if AUTO_REFRESH_CONFIG.get("enabled", True):
         asyncio.create_task(auto_refresh_worker())
-        print(f"[FastAPI] Đã kích hoạt Auto-Refresh ngầm mỗi {AUTO_REFRESH_CONFIG.get('interval_seconds', 60)} giây (Cấu hình tại config.py).")
+        asyncio.create_task(keep_alive_worker())
+        print(f"[FastAPI] Đã kích hoạt Auto-Refresh Staggered Batch (mỗi {AUTO_REFRESH_CONFIG.get('interval_seconds', 180)}s, batch {AUTO_REFRESH_CONFIG.get('batch_size', 5)} mã).")
+        print(f"[FastAPI] Đã kích hoạt Keep-Alive Worker (ping mỗi 10 phút – ngăn Render.com spin-down).")
     print("[FastAPI] Hệ thống API đã sẵn sàng phục vụ!")
 
 
@@ -414,6 +498,56 @@ def get_stock_candles(ticker: str, limit: int = Query(150, description="Số phi
         "ticker": ticker,
         "count": len(candles),
         "data": candles
+    }
+
+
+@app.get("/api/stocks/{ticker}/price", tags=["Giá Realtime"])
+def get_stock_price(ticker: str):
+    """
+    Lấy giá close mới nhất của 1 mã từ bộ nhớ RAM cache (< 1ms, không gọi API bên ngoài).
+    Dùng để frontend poll giá realtime thường xuyên mà không tiêu tốn rate-limit vnstock.
+    Trả về: { ticker, close, open, high, low, volume, change_pct, last_updated }
+    """
+    ticker = ticker.upper()
+    df = None
+    if ticker in STATE["processed_stocks"]:
+        df = STATE["processed_stocks"][ticker]
+    elif ticker == "VNINDEX" and STATE.get("vnindex_df") is not None:
+        df = STATE["vnindex_df"]
+
+    if df is None or df.empty:
+        # Tìm trong stock_analyses nếu không có processed_stocks
+        for s in STATE["stock_analyses"]:
+            if s["ticker"] == ticker:
+                return {
+                    "status": "success",
+                    "ticker": ticker,
+                    "close": s.get("close"),
+                    "change_pct": s.get("change_pct"),
+                    "last_updated": STATE["last_updated"]
+                }
+        raise HTTPException(status_code=404, detail=f"Không có dữ liệu giá cho {ticker}")
+
+    last = df.iloc[-1]
+    close = round(float(last.get("close", 0)), 2)
+    open_ = round(float(last.get("open", close)), 2)
+    high = round(float(last.get("high", close)), 2)
+    low = round(float(last.get("low", close)), 2)
+    volume = int(last.get("volume", 0))
+    change_pct = round((close - open_) / open_ * 100, 2) if open_ > 0 else 0.0
+    time_str = last["time"].strftime("%Y-%m-%d") if hasattr(last["time"], "strftime") else str(last["time"])[:10]
+
+    return {
+        "status": "success",
+        "ticker": ticker,
+        "date": time_str,
+        "close": close,
+        "open": open_,
+        "high": high,
+        "low": low,
+        "volume": volume,
+        "change_pct": change_pct,
+        "last_updated": STATE["last_updated"]
     }
 
 

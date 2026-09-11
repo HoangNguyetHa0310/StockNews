@@ -283,28 +283,38 @@ async function handleManualRefresh() {
   }, 600)
 }
 
-// ==================== CƠ CHẾ TỰ ĐỘNG LÀM MỚI KHI MỞ LẠI MÀN HÌNH / QUAY LẠI CHROME ====================
+// ==================== CƠ CHẾ PAUSE POLLING KHI TAB ẨN & REFRESH NGAY KHI QUAY LẠI ====================
 let lastActiveTimestamp = Date.now()
+let isPollingPaused = false
 
 async function handleVisibilityOrFocus() {
-  // Khi người dùng bật sáng màn hình, mở khóa điện thoại, hoặc quay lại tab Chrome từ ứng dụng khác
-  if (document.visibilityState === 'visible') {
+  if (document.visibilityState === 'visible' || document.hasFocus?.()) {
     const now = Date.now()
     const elapsedSeconds = Math.round((now - lastActiveTimestamp) / 1000)
 
-    // Nếu người dùng đã rời màn hình > 2 giây: lập tức làm mới toàn bộ dữ liệu (như Ctrl + Shift + R)
-    if (elapsedSeconds >= 2) {
-      console.log(`[Lifecycle] Mở lại web sau ${elapsedSeconds}s -> Tự động nạp mới toàn bộ dữ liệu...`)
-      countdown.value = refreshInterval.value
-      // Nạp ngầm dữ liệu mới nhất mà không giật màn hình
+    // Khi người dùng quay lại tab sau >= 30 giây: load mới dữ liệu ngay
+    if (isPollingPaused || elapsedSeconds >= 30) {
+      console.log(`[Lifecycle] Quay lại web sau ${elapsedSeconds}s → Tự động nạp mới dữ liệu...`)
+      isPollingPaused = false
+      // Nạp ngầm không giật màn hình
       await loadData(true)
       newsRefreshKey.value++
       riskRefreshKey.value++
+      // Khởi động lại timer từ đầu
+      startAutoRefreshTimer()
     }
     lastActiveTimestamp = now
   } else {
-    // Lưu lại mốc thời gian lúc người dùng tắt màn hình hoặc chuyển sang ứng dụng khác
+    // Tab bị ẩn / người dùng chuyển app khác → tạm dừng polling để tiết kiệm rate-limit
     lastActiveTimestamp = Date.now()
+    if (!isPollingPaused) {
+      isPollingPaused = true
+      if (timer) {
+        clearInterval(timer)
+        timer = null
+        console.log('[Lifecycle] Tab ẩn → Đã tạm dừng polling (tiết kiệm rate-limit).')
+      }
+    }
   }
 }
 
@@ -313,6 +323,16 @@ function startAutoRefreshTimer() {
   countdown.value = refreshInterval.value
 
   timer = setInterval(async () => {
+    if (document.hidden) {
+      // Nếu tab đang ẩn (user đã tab-out sau khi timer đã chạy) → dừng lại
+      if (!isPollingPaused) {
+        isPollingPaused = true
+        clearInterval(timer)
+        timer = null
+        console.log('[Timer] Tab ẩn giữa chừng → Dừng polling.')
+      }
+      return
+    }
     if (countdown.value > 1) {
       countdown.value--
     } else {
@@ -322,6 +342,7 @@ function startAutoRefreshTimer() {
     }
   }, 1000)
 }
+
 
 function openStockModal(stock) {
   if (!stock) return

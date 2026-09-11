@@ -3,13 +3,27 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
 
 /**
- * Hàm gọi API trung tâm với cơ chế Chống Cache (Cache-Busting):
+ * Map deduplication: nếu có request cùng URL đang pending, tái sử dụng Promise đó
+ * thay vì tạo request mới → giảm số lượng request trùng lặp khi nhiều tab/timer chạy song song.
+ */
+const _pendingRequests = new Map()
+
+/**
+ * Hàm gọi API trung tâm với cơ chế Chống Cache (Cache-Busting) + Request Deduplication:
  * - Tự động đính kèm timestamp `_t` để URL luôn luôn là duy nhất.
  * - Gửi kèm các HTTP Headers: 'Cache-Control: no-cache, no-store, must-revalidate', 'Pragma: no-cache'.
  * - Hoạt động giống hệt phím tắt 'Ctrl + Shift + R' trên trình duyệt,
  *   đảm bảo mỗi lần người dùng mở lại tab hoặc bật màn hình đều lấy dữ liệu mới nhất 100%.
+ * - Dedup: nếu cùng endpoint đang có request pending → tái sử dụng, không tạo request thứ 2.
  */
 async function apiFetch(endpoint, options = {}) {
+  // Dùng endpoint làm dedup key (bỏ qua timestamp để dedup chính xác)
+  const dedupKey = endpoint + (options.method || 'GET')
+
+  if (_pendingRequests.has(dedupKey)) {
+    return _pendingRequests.get(dedupKey)
+  }
+
   const separator = endpoint.includes('?') ? '&' : '?'
   const url = `${API_BASE}${endpoint}${separator}_t=${Date.now()}`
 
@@ -20,17 +34,21 @@ async function apiFetch(endpoint, options = {}) {
     ...(options.headers || {})
   }
 
-  const response = await fetch(url, {
+  const promise = fetch(url, {
     ...options,
     headers,
     cache: 'no-store'
   })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+      return response.json()
+    })
+    .finally(() => {
+      _pendingRequests.delete(dedupKey)
+    })
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-
-  return await response.json()
+  _pendingRequests.set(dedupKey, promise)
+  return promise
 }
 
 export async function fetchMarketOverview() {
@@ -77,6 +95,20 @@ export async function fetchStockCandles(ticker, limit = 120) {
   } catch (err) {
     console.error(`Lỗi lấy nến mã ${ticker}:`, err)
     return []
+  }
+}
+
+/**
+ * Lấy giá close mới nhất của 1 mã từ cache RAM server (< 1ms).
+ * Dùng để hiển thị giá realtime trong bảng xếp hạng mà không tốn rate-limit.
+ */
+export async function fetchStockPrice(ticker) {
+  try {
+    const json = await apiFetch(`/api/stocks/${ticker}/price`)
+    return json
+  } catch (err) {
+    console.error(`Lỗi lấy giá mã ${ticker}:`, err)
+    return null
   }
 }
 
