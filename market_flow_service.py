@@ -239,6 +239,12 @@ class MarketFlowService:
             "period_label": period_labels.get(period, "Phiên Gần Nhất"),
             "period_days": period_days,
             "latest_date": latest_date_str,
+            # Disclaimer quan trọng: dữ liệu là ước tính, KHÔNG phải khớp lệnh thực tế
+            "is_estimated": True,
+            "data_note": (
+                "Dữ liệu dòng tiền là ước tính tính toán dựa trên tỷ trọng tham gia lịch sử của khối ngoại. "
+                "Không phải dữ liệu khớp lệnh thực tế từ sàn HOSE. Chỉ mang tính tham khảo định hướng."
+            ),
             "summary": {
                 "total_vn30_volume_million": round(m_vol_million, 2),
                 "foreign": {

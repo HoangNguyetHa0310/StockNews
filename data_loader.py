@@ -11,8 +11,8 @@ from pathlib import Path
 from vnstock.api.quote import Quote
 from config import (
     DATA_DIR, VN30_TICKERS, MARKET_INDICES,
-    DEFAULT_START_DATE, TODAY_DATE, API_CONFIG,
-    VIETNAM_TZ, get_vietnam_now
+    DEFAULT_START_DATE, API_CONFIG,
+    VIETNAM_TZ, get_vietnam_now, get_today_date
 )
 
 
@@ -79,6 +79,7 @@ class DataLoader:
             if cached_df.empty:
                 return True
 
+            # Luôn dùng get_vietnam_now() – chính xác cả khi server chạy UTC trên Render.com
             now = get_vietnam_now()
             today_str = now.strftime("%Y-%m-%d")
             weekday = now.weekday()
@@ -86,18 +87,21 @@ class DataLoader:
             last_cached_dt = cached_df['time'].max()
             last_cached_str = last_cached_dt.strftime("%Y-%m-%d")
 
-            # Lấy thời điểm chỉnh sửa file gần nhất theo giờ Việt Nam
-            mtime = datetime.fromtimestamp(cache_file.stat().st_mtime, tz=timezone.utc).astimezone(VIETNAM_TZ)
+            # Lấy thời điểm chỉnh sửa file theo giờ Việt Nam (chuẩn timezone UTC+7)
+            mtime_utc = datetime.fromtimestamp(cache_file.stat().st_mtime, tz=timezone.utc)
+            mtime_vn = mtime_utc.astimezone(VIETNAM_TZ)
+
+            # Thời điểm chốt ATC hôm nay: 14:45 giờ Việt Nam
+            atc_cutoff = now.replace(hour=14, minute=45, second=0, microsecond=0)
 
             # Các ngày giao dịch trong tuần (Thứ 2 đến Thứ 6)
             if weekday < 5:
-                # Nếu hiện tại đã sau 14h45 (kết thúc phiên ATC)
-                if now.strftime("%H:%M") >= "14:45":
-                    # Chưa có nến ngày hôm nay
+                if now >= atc_cutoff:
+                    # Đã sau 14:45 VN: cache phải có nến hôm nay và file phải được ghi sau 14:45
                     if last_cached_str < today_str:
                         return True
-                    # Đã có nến hôm nay nhưng file cache được lưu trước 14h45 (chưa có giá chốt phiên ATC)
-                    if mtime.strftime("%Y-%m-%d") == today_str and mtime.strftime("%H:%M") < "14:45":
+                    # File được ghi trước 14:45 giờ VN hôm nay → chưa có giá ATC chính thức
+                    if mtime_vn.strftime("%Y-%m-%d") == today_str and mtime_vn < atc_cutoff:
                         return True
             else:
                 # Cuối tuần: Ngày giao dịch gần nhất là Thứ 6
@@ -117,8 +121,9 @@ class DataLoader:
         """
         ticker = ticker.upper()
         cache_file = self._get_cache_path(ticker)
+        # Luôn lấy ngày hôm nay theo giờ VN – tránh dùng TODAY_DATE cố định từ lúc import
         if end_date is None:
-            end_date = get_vietnam_now().strftime("%Y-%m-%d")
+            end_date = get_today_date()
 
         if cache_file.exists() and not force_update:
             if not self.is_cache_stale(cache_file):
@@ -194,7 +199,7 @@ class DataLoader:
         Lấy dữ liệu chỉ số thị trường (VNINDEX hoặc VN30).
         """
         if end_date is None:
-            end_date = get_vietnam_now().strftime("%Y-%m-%d")
+            end_date = get_today_date()
         return self.get_ticker_data(index_symbol, start_date=start_date, end_date=end_date, force_update=force_update)
 
     def load_all_vn30(self, force_update: bool = False) -> dict[str, pd.DataFrame]:

@@ -69,7 +69,15 @@ VN30_TICKERS = [
 # ==================== THỜI GIAN DỮ LIỆU ====================
 # Ngày bắt đầu lấy dữ liệu lịch sử (khuyến nghị >= 2-3 năm để mô hình học các chu kỳ)
 DEFAULT_START_DATE = "2021-01-01"
-TODAY_DATE = get_vietnam_now().strftime("%Y-%m-%d")
+
+def get_today_date() -> str:
+    """Lấy ngày hôm nay theo giờ Việt Nam (UTC+7) – luôn chính xác dù server chạy lâu không restart."""
+    return get_vietnam_now().strftime("%Y-%m-%d")
+
+# Giữ lại TODAY_DATE cho backward compatibility với các file khác import nó
+# nhưng các hàm mới nên dùng get_today_date() thay vì hằng số này.
+TODAY_DATE = get_today_date()
+
 
 # ==================== THÔNG SỐ CHỈ BÁO KỸ THUẬT ====================
 INDICATOR_PARAMS = {
